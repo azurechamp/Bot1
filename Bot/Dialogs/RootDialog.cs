@@ -38,14 +38,18 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \nFor complete help please click the link below: Https://short.bi/HELPMENOW \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(LoanAmountReceivedAsync);
             }
             if (activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(LoanAmountReceivedAsync);
             }
+            //if (activity.Text.ToLower().Contains("reset"))
+            //{
+            //    //context.Wait(MessageReceivedAsync);
+            //}
             try
             {
                 decimal amount = decimal.Parse(activity.Text, NumberStyles.Currency); ;
@@ -68,14 +72,18 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \nFor complete help please click the link below: Https://short.bi/HELPMENOW \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(TypeOfCarReceivedAsync);
             }
             if (activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(TypeOfCarReceivedAsync);
             }
+            //if (activity.Text.ToLower().Contains("reset"))
+            //{
+            //    context.Wait(MessageReceivedAsync);
+            //}
 
             if (activity.Text.ToLower().Equals("used"))
             {
@@ -135,14 +143,18 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \nFor complete help please click the link below: Https://short.bi/HELPMENOW \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(FirstQuestionAnswer);
             }
             if (activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(FirstQuestionAnswer);
             }
+            //if (activity.Text.ToLower().Contains("reset"))
+            //{
+            //    context.Wait(MessageReceivedAsync);
+            //}
             if (activity.Text.ToLower().Equals(retainedObj.License.Question1.answer.ToLower()))
             {
                 ChatModel.Answer1= true;
@@ -167,14 +179,18 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \nFor complete help please click the link below: Https://short.bi/HELPMENOW \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(SecondQuestionAnswer);
             }
             if (activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(SecondQuestionAnswer);
             }
+            //if (activity.Text.ToLower().Contains("reset"))
+            //{
+            //    context.Wait(MessageReceivedAsync);
+            //}
             if (activity.Text.ToLower().Equals(retainedObj.License.Question2.answer.ToLower()))
             {
                 ChatModel.Answer2 = true;
@@ -226,20 +242,24 @@ namespace Bot.Dialogs
 
             if (activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \nFor complete help please click the link below: Https://short.bi/HELPMENOW \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(LoanTerms);
             }
             if (activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(LoanTerms);
             }
+            //if (activity.Text.ToLower().Contains("reset"))
+            //{
+            //    context.Wait(MessageReceivedAsync);
+            //}
             if (activity.Text.Equals("3") || activity.Text.Equals("4") || activity.Text.Equals("5"))
             {
-                await context.PostAsync("Obtain Quotes From Lenders \n(Lender selection based upon loan type, state, amount)");
+                await context.PostAsync("Obtain Quotes From Lenders \n\n(Lender selection based upon loan type, state, amount)");
                 await context.PostAsync($"Congratulations {retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout}");
-                await context.PostAsync("PNC Bank 1) 36 Months 4.875%=  $438.12 2) 48 Months 4.875% = $412.12 3) 60 Months 4.989%  = $395.60 Huntington 4) 36 Months 4.875%=  $438.12 5) 48 Months 4.875% = $412.12 6) 60 Months 4.989%  = $395.60 Chase 7) 36 Months 4.875%=  $438.12 8) 48 Months 4.875% = $412.12 9) 60 Months 4.989%  = $395.60");
-                await context.PostAsync("To see shorter terms, enter SHORTER To see longer terms, enter LONGER To change the loan amount  please enter in a new Loan Amount.\nOtherwise please select one  of the offers above to receive your preapproval authorization code.");
+                await context.PostAsync("PNC Bank \n\n1) 36 Months 4.875%=  $438.12 \n\n2) 48 Months 4.875% = $412.12 \n\n3) 60 Months 4.989%  = $395.60 \n\nHuntington \n\n4) 36 Months 4.875%=  $438.12 \n\n5) 48 Months 4.875% = $412.12 \n\n6) 60 Months 4.989%  = $395.60 \n\nChase \n\n7) 36 Months 4.875%=  $438.12 \n\n8) 48 Months 4.875% = $412.12 \n\n9) 60 Months 4.989%  = $395.60");
+                await context.PostAsync("To see shorter terms, enter SHORTER To see longer terms, enter LONGER To change the loan amount  please enter in a new Loan Amount.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.");
 
                 context.Wait(BankOffers);
             }
@@ -251,14 +271,18 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \nFor complete help please click the link below: Https://short.bi/HELPMENOW \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(YearOfVehicle);
             }
             if (activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n© 2017 Visionet Systems \nwww.visionetsystems.com");
+                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
                 context.Wait(YearOfVehicle);
             }
+            //if (activity.Text.ToLower().Contains("reset"))
+            //{
+            //    context.Wait(MessageReceivedAsync);
+            //}
 
             if (activity.Text.Equals("2012") || activity.Text.Equals("2013") || activity.Text.Equals("2014") || activity.Text.Equals("2015") || activity.Text.Equals("2016") || activity.Text.Equals("2017") || activity.Text.Equals("2018"))
             {
