@@ -117,6 +117,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalVars\UrlEndpoints.cs" />
+    <Compile Include="Models\ChatModel.cs" />
     <Compile Include="Models\VerificationObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
