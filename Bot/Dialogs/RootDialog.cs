@@ -50,19 +50,26 @@ namespace Bot.Dialogs
             //{
             //    //context.Wait(MessageReceivedAsync);
             //}
-            try
+
+            if (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))
             {
-                decimal amount = decimal.Parse(activity.Text, NumberStyles.Currency); ;
-                ChatModel.LoanAmout = amount;
-                await context.PostAsync("Is this for a New or Used car?");
-                context.Wait(TypeOfCarReceivedAsync);
+                //implementation left
             }
-            catch (FormatException exc)
-            {
-                await context.PostAsync("Please enter a valid value !");
-                context.Wait(LoanAmountReceivedAsync);
+            else
+            { 
+                try
+                {
+                    decimal amount = decimal.Parse(activity.Text, NumberStyles.Currency); ;
+                    ChatModel.LoanAmout = amount;
+                    await context.PostAsync("Is this for a New or Used car?");
+                    context.Wait(TypeOfCarReceivedAsync);
+                }
+                catch (FormatException exc)
+                {
+                    await context.PostAsync("Please enter a valid value !");
+                    context.Wait(LoanAmountReceivedAsync);
+                }
             }
-           
         }
 
        
@@ -105,13 +112,22 @@ namespace Bot.Dialogs
             }
             else
             {
-                await context.PostAsync("");
-                context.Wait(TypeOfCarReceivedAsync);
+                if (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms")) { }
+                else
+                {
+                    await context.PostAsync("Please enter New/Used");
+                    context.Wait(TypeOfCarReceivedAsync);
+                }
             }
         }
         
         private async Task CheckForVarification(IDialogContext context, IAwaitable<object> result)
         {
+            var activity = await result as Activity;
+            foreach (var attachment in activity.Attachments)
+            {
+               var attch = attachment;
+            }
 
             var client = new HttpClient();
             var response = await client.GetAsync(GlobalVars.UrlEndpoints.ValidationUrl);
@@ -168,8 +184,16 @@ namespace Bot.Dialogs
             }
             else
             {
-                ChatModel.Answer2 = false;
-                context.Wait(SecondQuestionAnswer);
+                if (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))
+                {
+                    //implenationt missing yet
+                }
+                else
+                {
+                    ChatModel.Answer2 = false;
+                    context.Wait(SecondQuestionAnswer);
+                }
+               
             }
 
         }
@@ -228,8 +252,12 @@ namespace Bot.Dialogs
             }
             else
             {
-                await context.PostAsync("Sorry, we were unable to verify your identity at this time. Please try again, or contact 412-298-7108 to confirm your identity.");
-                context.Reset();
+                if (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms")) { }
+                else
+                {
+                    await context.PostAsync("Sorry, we were unable to verify your identity at this time. Please try again, or contact 412-298-7108 to confirm your identity.");
+                    context.Reset();
+                }
             }
 
             
@@ -239,6 +267,7 @@ namespace Bot.Dialogs
         private async Task LoanTerms(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
+            
 
             if (activity.Text.ToLower().Contains("help"))
             {
@@ -292,8 +321,12 @@ namespace Bot.Dialogs
             }
             else
             {
-                await context.PostAsync("Please Enter valid year, (2012-2018)");
-                context.Wait(YearOfVehicle);
+                if (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms")) { }
+                else
+                {
+                    await context.PostAsync("Please Enter valid year, (2012-2018)");
+                    context.Wait(YearOfVehicle);
+                }
             }
         }
 
