@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bot.GlobalVars
 {
@@ -11,6 +7,7 @@ namespace Bot.GlobalVars
     {
         public static string ValidationUrl { get; set; } = "https://raw.githubusercontent.com/muhammad92/Sport/master/test.json";
         public static string GetUrlEndpoint { get; set; } = "http://visiloanapi.azurewebsites.net/api/customer/getuploadurl";
+        public static string GetBankPackages { get; set; } = "http://visiloanapi.azurewebsites.net/api/customer/getbankoptions";
 
     }
 }
