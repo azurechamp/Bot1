@@ -292,7 +292,7 @@ namespace Bot.Dialogs
             //TODO: Need to change it with API.
             //TODO: All implementation.
             //TODO: Extract the method for parsing and getting offer.
-            //TODO: seperators in offer | and change decimal places.
+            //TODO: seperators in offer | and change decimal places.   
             var activity = await result as Activity;
 
             string jsonResponse="" ;
