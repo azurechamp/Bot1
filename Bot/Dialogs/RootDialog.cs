@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Threading;
@@ -16,17 +17,23 @@ namespace Bot.Dialogs
     {
         #region variables
         VerificationObject _retainedObj;
+        Queue<ChatMessage> chatHistory = new Queue<ChatMessage>();
         #endregion
 
 
         #region GenericMethods
         private static async Task<string> ParseJson(string url)
         {
-            var client = new HttpClient();
+            var client = new HttpClient(); 
             var response = await client.GetAsync(url);
             var jsonString = response.Content.ReadAsStringAsync().Result;
             return jsonString;
         }
+        private void AddMessagetoHistory(string msg, string from)
+        {
+            chatHistory.Enqueue(new ChatMessage { Message = msg, From = from });
+        }
+
         #endregion
 
         public Task StartAsync(IDialogContext context)
@@ -41,16 +48,13 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity != null && activity.Text.ToLower().Equals("loan"))
             {
-
-                await context.PostAsync(
-                    "Welcome to the turboLoan Car Loan Application.  For Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://short.bi/YRTRHDHD");
-                await context.PostAsync("Please enter in the amount you wish to borrow?");
-
+                await context.PostAsync(BotResponses.WelcomeMessage);
+                AddMessagetoHistory(BotResponses.WelcomeMessage, "Bot");
                 context.Wait(LoanAmountReceivedAsync);
             }
             else
             {
-                await context.PostAsync("Send \"Loan\" to this number to get started!");
+                await context.PostAsync(BotResponses.InitiationPropmpt);
                 context.Wait(MessageReceivedAsync);
             }
         }
@@ -58,14 +62,18 @@ namespace Bot.Dialogs
         private async Task LoanAmountReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
+            AddMessagetoHistory(activity?.Text, "User");
+
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(LoanAmountReceivedAsync);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText,"Bot");
                 context.Wait(LoanAmountReceivedAsync);
             }
             
@@ -79,15 +87,16 @@ namespace Bot.Dialogs
                 {
                     if (activity != null)
                     {
+                        AddMessagetoHistory(activity.Text, "User");
                         decimal amount = decimal.Parse(activity.Text, NumberStyles.Currency); 
                         ChatModel.LoanAmout = amount;
                     }
-                    await context.PostAsync("Is this for a New or Used car?");
+                    await context.PostAsync(BotResponses.CarQuestionText);
                     context.Wait(TypeOfCarReceivedAsync);
                 }
                 catch (FormatException)
                 {
-                    await context.PostAsync("Please enter a valid value !");
+                    await context.PostAsync(BotResponses.InvalidInputText);
                     context.Wait(LoanAmountReceivedAsync);
                 }
             }
@@ -103,34 +112,41 @@ namespace Bot.Dialogs
             var url = jsonModel.url;
             ChatModel.CustomerId = jsonModel.CustomerId;
            
-
+            
             
             var activity = await result as Activity;
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(TypeOfCarReceivedAsync);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText,"Bot");
                 context.Wait(TypeOfCarReceivedAsync);
             }
             
 
             if (activity != null && activity.Text.ToLower().Equals("used"))
             {
+
+                AddMessagetoHistory(activity.Text, "User");
                 ChatModel.CarType = "used";
-                await context.PostAsync($"Please click the link below to upload a photo of your drivers license {url}");
-                await context.PostAsync("When you are done, press 1 and send!");
+                await context.PostAsync($"{BotResponses.ImageUploadPromptText1} {url}");
+                await context.PostAsync(BotResponses.ImageUploadPromptText2);
+                AddMessagetoHistory($"{BotResponses.ImageUploadPromptText1} {url}", "Bot");
                 context.Wait(CheckForVarification);
 
             }
             else if (activity != null && activity.Text.ToLower().Equals("new"))
             {
+                AddMessagetoHistory(activity.Text,"User");
                 ChatModel.CarType = "new";
-                await context.PostAsync($"Please click the link below to upload a photo of your drivers license {url}");
-                await context.PostAsync("When you are done, press 1 and send!");
+                await context.PostAsync($"{BotResponses.ImageUploadPromptText1} {url}");
+                await context.PostAsync(BotResponses.ImageUploadPromptText2);
+                AddMessagetoHistory($"{BotResponses.ImageUploadPromptText1} {url}", "Bot");
                 context.Wait(CheckForVarification);
                 //MessageReceivedAsync
 
@@ -140,7 +156,7 @@ namespace Bot.Dialogs
                 if (activity != null && (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))) { }
                 else
                 {
-                    await context.PostAsync("Please enter New/Used");
+                    await context.PostAsync($"{BotResponses.InvalidInputText} \n\nPlease enter Used/New" );
                     context.Wait(TypeOfCarReceivedAsync);
                 }
             }
@@ -164,59 +180,62 @@ namespace Bot.Dialogs
 
             if (_retainedObj.License.Verified.Equals("Yes"))
             {
-                await context.PostAsync($"Hello {_retainedObj.License.Name},  first we need to verify your identity. This is for your own protection. Please answer the following questions.");
+                await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
+                AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}","Bot");
                 if (_retainedObj.License.Question1 != null)
                     await context.PostAsync($"Q:{_retainedObj.License.Question1.question}");
+                    AddMessagetoHistory($"Q:{_retainedObj.License.Question1?.question}","Bot");
                 context.Wait(FirstQuestionAnswer);
             }
             else if (_retainedObj.License.Verified.Equals("No"))
             {
-                await context.PostAsync("Unable to validate drivers license. Please upload a new photo with minimal glare and fits to the picture area");
-                await context.PostAsync("When you are done, press 1 and send!");
+                await context.PostAsync(BotResponses.UnableToVerifyText);
+                AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
                 context.Wait(CheckForVarification);
             }
 
 
         }
 
-       
-
         private async Task FirstQuestionAnswer(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(FirstQuestionAnswer);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText,"Bot");
                 context.Wait(FirstQuestionAnswer);
             }
-            //if (activity.Text.ToLower().Contains("reset"))
-            //{
-            //    context.Wait(MessageReceivedAsync);
-            //}
             if (activity != null && activity.Text.ToLower().Equals(_retainedObj.License.Question1.answer.ToLower()))
             {
+                AddMessagetoHistory(activity.Text, "User");
+
                 ChatModel.Answer1= true;
                 await context.PostAsync($"Q:{_retainedObj.License.Question2.question}");
+                AddMessagetoHistory($"Q:{_retainedObj.License.Question2.question}","Bot");
                 context.Wait(SecondQuestionAnswer);
 
             }
             else if (activity != null && activity.Text.ToLower().Equals("exit"))
             {
+                
                 context.Reset();
             }
             else
             {
                 if (activity != null && (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms")))
                 {
-                    //implenationt missing yet
+                    //implementation missing yet
                 }
                 else
                 {
+                    AddMessagetoHistory(activity?.Text, "User");
                     ChatModel.Answer2 = false;
                     context.Wait(SecondQuestionAnswer);
                 }
@@ -230,12 +249,14 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(SecondQuestionAnswer);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText,"Bot");
                 context.Wait(SecondQuestionAnswer);
             }
             //if (activity.Text.ToLower().Contains("reset"))
@@ -244,6 +265,7 @@ namespace Bot.Dialogs
             //}
             if (activity != null && activity.Text.ToLower().Equals(_retainedObj.License.Question2.answer.ToLower()))
             {
+                AddMessagetoHistory(activity.Text, "User");
                 ChatModel.Answer2 = true;
 
                 if (ChatModel.Answer1 && ChatModel.Answer2)
@@ -251,21 +273,25 @@ namespace Bot.Dialogs
                    
                     if (ChatModel.CarType.ToLower().Equals("used"))
                     {
-                        await context.PostAsync("Please enter the year of the vehicle?");
+                        await context.PostAsync(BotResponses.VehicleYearPromptText);
+                        AddMessagetoHistory(BotResponses.VehicleYearPromptText, "Bot");
                         context.Wait(YearOfVehicle);
                         //year of vehicle
                     }
                     if (ChatModel.CarType.ToLower().Equals("new"))
                     {
 
-                        await context.PostAsync("Please enter length of loan term in year(s). For see multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?");
+                        await context.PostAsync(BotResponses.LoanTermsPromptText);
+                        AddMessagetoHistory(BotResponses.LoanTermsPromptText, "Bot");
                         context.Wait(LoanTerms);
                       
                     }
                 }
                 else
                 {
-                    await context.PostAsync("Sorry, we were unable to verify your identity at this time. Please try again, or contact 412-298-7108 to confirm your identity.");
+                    await context.PostAsync(BotResponses.UnableToVerifyIdentity);
+                    AddMessagetoHistory(BotResponses.UnableToVerifyIdentity, "Bot");
+                    //TODO: Push History Implementation
                     context.Reset();
                 }
                 
@@ -279,7 +305,7 @@ namespace Bot.Dialogs
                 if (activity != null && (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))) { }
                 else
                 {
-                    await context.PostAsync("Sorry, we were unable to verify your identity at this time. Please try again, or contact 412-298-7108 to confirm your identity.");
+                    await context.PostAsync(BotResponses.UnableToVerifyIdentity);
                     context.Reset();
                 }
             }
@@ -290,47 +316,52 @@ namespace Bot.Dialogs
         {
 
             //TODO: Need to change it with API.
-            //TODO: All implementation.
             //TODO: Extract the method for parsing and getting offer.
             //TODO: seperators in offer | and change decimal places.   
             var activity = await result as Activity;
+            AddMessagetoHistory(activity?.Text,"User");
+            if (activity != null && activity.Text.ToLower().Contains("help"))
+            {
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                context.Wait(LoanTerms);
+            }
+            if (activity != null && activity.Text.ToLower().Contains("terms"))
+            {
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                context.Wait(LoanTerms);
+            }
 
             string jsonResponse="" ;
             if (activity != null)
-            {
-                jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
-                                                      $"?amount={(int) ChatModel.LoanAmout}&terms={activity.Text}&cid={ChatModel.CustomerId}");
-            }
+                if (activity.Text.ToLower().Equals("all"))
+                    jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
+                                                   $"?amount={(int) ChatModel.LoanAmout}&terms=1,2,3,4,5,6&cid={ChatModel.CustomerId}");
+                else
+                    jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
+                                                   $"?amount={(int) ChatModel.LoanAmout}&terms={activity.Text}&cid={ChatModel.CustomerId}");
             var jsonModel = JsonConvert.DeserializeObject<BankPackageModel>(jsonResponse);
 
             if (activity != null)
             {
                 var unused = activity.Text.Split(',');
             }
-            if (activity != null && activity.Text.ToLower().Contains("help"))
-            {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
-                context.Wait(LoanTerms);
-            }
-            if (activity != null && activity.Text.ToLower().Contains("terms"))
-            {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
-                context.Wait(LoanTerms);
-            }
+            
             
             if (activity != null && !String.IsNullOrEmpty(jsonResponse))
             {
-                await context.PostAsync("Obtain Quotes From Lenders \n\n(Lender selection based upon loan type, state, amount)");
+                await context.PostAsync(BotResponses.trterms1);
                 Thread.Sleep(200);
                 await context.PostAsync($"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout}");
                 Thread.Sleep(200);
 
-                string packages = "";
+                var packages = "";
                 foreach (var bankInfo in jsonModel.BankInfo)
-                {
-                    packages += $"{bankInfo.BankId}) {bankInfo.BankName} {bankInfo.Amount} {bankInfo.Term} {bankInfo.Rate}  \n\n";
-                }
+                    packages +=
+                        $"{bankInfo.BankId}) {bankInfo.BankName} {bankInfo.Amount} {bankInfo.Term} {bankInfo.Rate}  \n\n";
                 await context.PostAsync(packages);
+                AddMessagetoHistory(packages,"Bot");
                 Thread.Sleep(200);
                 await context.PostAsync("To see shorter terms, enter SHORTER To see longer terms, enter LONGER To change the loan amount  please enter in a new Loan Amount.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.");
                 context.Wait(BankOffers);
@@ -343,19 +374,23 @@ namespace Bot.Dialogs
             var activity = await result as Activity;
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
-                await context.PostAsync("HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(YearOfVehicle);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
-                await context.PostAsync("A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com");
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText, "Bot");
                 context.Wait(YearOfVehicle);
             }
             
             if (activity != null && (activity.Text.Equals("2012") || activity.Text.Equals("2013") || activity.Text.Equals("2014") || activity.Text.Equals("2015") || activity.Text.Equals("2016") || activity.Text.Equals("2017") || activity.Text.Equals("2018")))
             {
+                AddMessagetoHistory(activity.Text,"User");
                 ChatModel.YearOfVehicle = activity.Text;
-                await context.PostAsync("Please enter length of loan term in year(s). For see multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?");
+                await context.PostAsync(BotResponses.termsPrompt);
+                AddMessagetoHistory(BotResponses.termsPrompt, "Bot");
                 context.Wait(LoanTerms);
             }
             else
@@ -363,21 +398,25 @@ namespace Bot.Dialogs
                 if (activity != null && (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))) { }
                 else
                 {
-                    await context.PostAsync("Please Enter valid year, (2012-2018)");
+                    await context.PostAsync($"{BotResponses.InvalidInputText}, (2012-2018)");
                     context.Wait(YearOfVehicle);
                 }
             }
         }
-
         
         private async Task BankOffers(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
             if (activity != null && (activity.Text.Equals("1") || activity.Text.Equals("2") || activity.Text.Equals("3") || activity.Text.Equals("4") || activity.Text.Equals("5") || activity.Text.Equals("6") || activity.Text.Equals("7") || activity.Text.Equals("8") || activity.Text.Equals("9")))
             {
-                await context.PostAsync("Your Huntington Bank Authorization code is JWQTUR.  This offer is valid for 48 hours. Please click the link below to finish your application,  or provide this number to your dealer. Https://shirt.li/NORMG123");
+                AddMessagetoHistory(activity.Text,"User");
+                await context.PostAsync(BotResponses.FinalMessage);
+                AddMessagetoHistory(BotResponses.FinalMessage, "Bot");
                 context.Wait(MessageReceivedAsync);
-            }
+
+                var unused = JsonConvert.SerializeObject(chatHistory);
+                chatHistory.Clear();
+            }   //TODO: Implement Push History and flush
             else
             {
                 context.Wait(MessageReceivedAsync);
