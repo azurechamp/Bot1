@@ -15,25 +15,78 @@ namespace Bot.Dialogs
     [Serializable]
     public class RootDialog : IDialog<object>
     {
-        #region variables
+        #region definitions
         VerificationObject _retainedObj;
-        Queue<ChatMessage> chatHistory = new Queue<ChatMessage>();
+        readonly Queue<ChatMessage> _chatHistory = new Queue<ChatMessage>();
         #endregion
 
 
         #region GenericMethods
         private static async Task<string> ParseJson(string url)
         {
-            var client = new HttpClient(); 
-            var response = await client.GetAsync(url);
-            var jsonString = response.Content.ReadAsStringAsync().Result;
+            string jsonString = "";
+            try
+            {
+                var client = new HttpClient();
+                var response = await client.GetAsync(url);
+                jsonString = response.Content.ReadAsStringAsync().Result;
+            }catch(Exception e) { Console.WriteLine(e.Message); }
             return jsonString;
         }
         private void AddMessagetoHistory(string msg, string from)
         {
-            chatHistory.Enqueue(new ChatMessage { Message = msg, From = from });
+            _chatHistory.Enqueue(new ChatMessage { Message = msg, From = from });
         }
-
+        private bool TermsValidation(Activity activity)
+        {
+            var validation = false;
+            var termSplit = activity.Text.Split(',');
+            foreach (var term in termSplit)
+            {
+                int value;
+                Int32.TryParse(term, out value);
+                if (value == 1 || value == 2 || value == 3 || value == 4 || value == 5 ||
+                    value == 6)
+                {
+                    validation = true;
+                }
+                else
+                {
+                    validation = false;
+                    break;
+                }
+            }
+            return validation;
+        }
+        private void SaveandPushLog()
+        {
+            try
+            {
+                var historyString = JsonConvert.SerializeObject(_chatHistory);
+                var base64HistoryString = Base64Encode(historyString);
+                PushLog(base64HistoryString);
+                _chatHistory.Clear();
+            }catch(Exception e) {Console.WriteLine(e.Message); }
+        }
+        private string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(plainTextBytes);
+        }
+        private async void PushLog(string base64String)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(UrlEndpoints.BaseUrl);
+                var content = new  FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("CustomerId", ChatModel.CustomerId), new KeyValuePair<string, string>("Text",base64String), 
+                });
+                var result = await client.PostAsync("/api/customer/PostConversation", content);
+                string resultContent = await result.Content.ReadAsStringAsync();
+                Console.WriteLine(resultContent);
+            }
+        }
         #endregion
 
         public Task StartAsync(IDialogContext context)
@@ -102,11 +155,10 @@ namespace Bot.Dialogs
             }
         }
 
-       
-
         private async Task TypeOfCarReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             //Get Url Implementation
+
             string jsonResponse = await ParseJson(UrlEndpoints.GetUrlEndpoint);
             var jsonModel = JsonConvert.DeserializeObject<GetUrlObject>(jsonResponse);
             var url = jsonModel.url;
@@ -259,10 +311,7 @@ namespace Bot.Dialogs
                 AddMessagetoHistory(BotResponses.TermsText,"Bot");
                 context.Wait(SecondQuestionAnswer);
             }
-            //if (activity.Text.ToLower().Contains("reset"))
-            //{
-            //    context.Wait(MessageReceivedAsync);
-            //}
+         
             if (activity != null && activity.Text.ToLower().Equals(_retainedObj.License.Question2.answer.ToLower()))
             {
                 AddMessagetoHistory(activity.Text, "User");
@@ -291,7 +340,8 @@ namespace Bot.Dialogs
                 {
                     await context.PostAsync(BotResponses.UnableToVerifyIdentity);
                     AddMessagetoHistory(BotResponses.UnableToVerifyIdentity, "Bot");
-                    //TODO: Push History Implementation
+                    SaveandPushLog();
+                    //TODO: Implement History Push
                     context.Reset();
                 }
                 
@@ -335,25 +385,37 @@ namespace Bot.Dialogs
 
             string jsonResponse="" ;
             if (activity != null)
-                if (activity.Text.ToLower().Equals("all"))
-                    jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
-                                                   $"?amount={(int) ChatModel.LoanAmout}&terms=1,2,3,4,5,6&cid={ChatModel.CustomerId}");
-                else
-                    jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
-                                                   $"?amount={(int) ChatModel.LoanAmout}&terms={activity.Text}&cid={ChatModel.CustomerId}");
+            {
+                try
+                {
+                    if (activity.Text.ToLower().Equals("all"))
+                        jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
+                                                       $"?amount={(int) ChatModel.LoanAmout}&terms=1,2,3,4,5,6&cid={ChatModel.CustomerId}");
+                    else
+                    {
+                        if (TermsValidation(activity))
+                        {
+
+                            jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
+                                                           $"?amount={(int) ChatModel.LoanAmout}&terms={activity.Text}&cid={ChatModel.CustomerId}");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+
             var jsonModel = JsonConvert.DeserializeObject<BankPackageModel>(jsonResponse);
 
-            if (activity != null)
-            {
-                var unused = activity.Text.Split(',');
-            }
-            
-            
+
             if (activity != null && !String.IsNullOrEmpty(jsonResponse))
             {
                 await context.PostAsync(BotResponses.trterms1);
                 Thread.Sleep(200);
-                await context.PostAsync($"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout}");
+                await context.PostAsync(
+                    $"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout}");
                 Thread.Sleep(200);
 
                 var packages = "";
@@ -361,14 +423,23 @@ namespace Bot.Dialogs
                     packages +=
                         $"{bankInfo.BankId}) {bankInfo.BankName} {bankInfo.Amount} {bankInfo.Term} {bankInfo.Rate}  \n\n";
                 await context.PostAsync(packages);
-                AddMessagetoHistory(packages,"Bot");
+                AddMessagetoHistory(packages, "Bot");
                 Thread.Sleep(200);
-                await context.PostAsync("To see shorter terms, enter SHORTER To see longer terms, enter LONGER To change the loan amount  please enter in a new Loan Amount.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.");
+                await context.PostAsync(
+                    "To see shorter terms, enter SHORTER To see longer terms, enter LONGER To change the loan amount  please enter in a new Loan Amount.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.");
                 context.Wait(BankOffers);
+            }
+            else
+            {
+                await context.PostAsync(BotResponses.InvalidInputText + $"\n\n");
+                await context.PostAsync(BotResponses.LoanTermsPromptText);
+                context.Wait(LoanTerms);
             }
 
         }
+
        
+
         private async Task YearOfVehicle(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -407,22 +478,23 @@ namespace Bot.Dialogs
         private async Task BankOffers(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (activity != null && (activity.Text.Equals("1") || activity.Text.Equals("2") || activity.Text.Equals("3") || activity.Text.Equals("4") || activity.Text.Equals("5") || activity.Text.Equals("6") || activity.Text.Equals("7") || activity.Text.Equals("8") || activity.Text.Equals("9")))
+            if (activity != null && (activity.Text.Equals("1") || activity.Text.Equals("2") ||
+                                     activity.Text.Equals("3") || activity.Text.Equals("4") ||
+                                     activity.Text.Equals("5") || activity.Text.Equals("6") ||
+                                     activity.Text.Equals("7") || activity.Text.Equals("8") ||
+                                     activity.Text.Equals("9")))
             {
-                AddMessagetoHistory(activity.Text,"User");
+                AddMessagetoHistory(activity.Text, "User");
                 await context.PostAsync(BotResponses.FinalMessage);
                 AddMessagetoHistory(BotResponses.FinalMessage, "Bot");
                 context.Wait(MessageReceivedAsync);
-
-                var unused = JsonConvert.SerializeObject(chatHistory);
-                chatHistory.Clear();
-            }   //TODO: Implement Push History and flush
+                SaveandPushLog();
+            }
             else
             {
                 context.Wait(MessageReceivedAsync);
             }
         }
-        
 
-        }
-    }
+     }
+}

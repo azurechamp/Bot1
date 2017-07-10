@@ -118,6 +118,7 @@
     </Compile>
     <Compile Include="GlobalVars\BotResponses.cs" />
     <Compile Include="GlobalVars\UrlEndpoints.cs" />
+    <Compile Include="GlobalVars\Utils.cs" />
     <Compile Include="Models\BankPackageModel.cs" />
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\ChatModel.cs" />
