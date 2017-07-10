@@ -49,7 +49,6 @@ namespace Bot.GlobalVars
         public static string termsPrompt { get; set; } =
             "Please enter length of loan term in year(s). For see multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?";
 
-        public static string FinalMessage { get; set; } =
-            "Your Huntington Bank Authorization code is JWQTUR.  This offer is valid for 48 hours. Please click the link below to finish your application,  or provide this number to your dealer. https://is.gd/soMHVR";
+      
     }
 }

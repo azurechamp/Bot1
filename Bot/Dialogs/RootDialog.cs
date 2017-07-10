@@ -73,6 +73,27 @@ namespace Bot.Dialogs
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
         }
+        private static async Task FinalStep(IDialogContext context, VerificationModel jsonModel)
+        {
+            await context.PostAsync($"Your Huntington Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. Please click the link below to finish your application,  or provide this number to your dealer.{jsonModel.URL}");
+        }
+        private static async Task<VerificationModel> FinalVerification(Activity activity)
+        {
+            VerificationModel jsonModel = null;
+            try
+            {
+                var response =
+                    await ParseJson(
+                        $"http://visiloanapi.azurewebsites.net/api/customer/VerifyCodeUrl?cid={ChatModel.CustomerId}&selectedPackage={activity.Text}");
+               jsonModel  = JsonConvert.DeserializeObject<VerificationModel>(response);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return jsonModel;
+        }
         private async void PushLog(string base64String)
         {
             using (var client = new HttpClient())
@@ -485,10 +506,15 @@ namespace Bot.Dialogs
                                      activity.Text.Equals("9")))
             {
                 AddMessagetoHistory(activity.Text, "User");
-                await context.PostAsync(BotResponses.FinalMessage);
-                AddMessagetoHistory(BotResponses.FinalMessage, "Bot");
+
+                
                 context.Wait(MessageReceivedAsync);
+                VerificationModel jsonModel = await FinalVerification(activity);
+                Thread.Sleep(1000);
                 SaveandPushLog();
+                Thread.Sleep(1000);
+                await FinalStep(context, jsonModel);
+
             }
             else
             {
@@ -496,5 +522,7 @@ namespace Bot.Dialogs
             }
         }
 
-     }
+        
+
+    }
 }
