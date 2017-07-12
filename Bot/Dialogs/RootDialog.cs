@@ -22,6 +22,11 @@ namespace Bot.Dialogs
         #endregion
 
         #region GenericMethods
+        /// <summary>
+        /// Generic Method to Parse JSON for making code less redundant
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         private static async Task<string> ParseJson(string url)
         {
             var jsonString = "";
@@ -33,10 +38,20 @@ namespace Bot.Dialogs
             }catch(Exception e) { Console.WriteLine(e.Message); }
             return jsonString;
         }
+        /// <summary>
+        /// Adds message to history which ultimately packs it into the log and send it to API
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="from"></param>
         private void AddMessagetoHistory(string msg, string from)
         {
             _chatHistory.Enqueue(new ChatMessage { Message = msg, From = from });
         }
+        /// <summary>
+        /// Method for Validation of Bank Terms
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <returns></returns>
         private bool TermsValidation(Activity activity)
         {
             var validation = false;
@@ -58,6 +73,11 @@ namespace Bot.Dialogs
             }
             return validation;
         }
+
+        /// <summary>
+        /// Saves the Log of user chate and push it to 
+        /// API Server
+        /// </summary>
         private void SaveandPushLog()
         {
             try
@@ -68,15 +88,33 @@ namespace Bot.Dialogs
                 _chatHistory.Clear();
             }catch(Exception e) {Console.WriteLine(e.Message); }
         }
+        /// <summary>
+        /// Base 64 Encode Implementation
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
         private string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
         }
+        /// <summary>
+        /// Final Prompt Implementation
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="jsonModel"></param>
+        /// <returns></returns>
         private static async Task FinalStep(IDialogContext context, VerificationModel jsonModel)
         {
             await context.PostAsync($"Your Huntington Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. Please click the link below to finish your application,  or provide this number to your dealer.{jsonModel.URL}");
         }
+        /// <summary>
+        /// Sends selected Terms of bank back to API and get
+        /// Authorization Code for respective term and URL for 
+        /// Confirmation.
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <returns></returns>
         private static async Task<VerificationModel> FinalVerification(Activity activity)
         {
             VerificationModel jsonModel = null;
@@ -94,6 +132,10 @@ namespace Bot.Dialogs
             }
             return jsonModel;
         }
+        /// <summary>
+        /// Pushes Log 
+        /// </summary>
+        /// <param name="base64String"></param>
         private async void PushLog(string base64String)
         {
             using (var client = new HttpClient())
@@ -110,6 +152,11 @@ namespace Bot.Dialogs
         }
         #endregion
 
+        /// <summary>
+        /// Starts the Bot
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task StartAsync(IDialogContext context)
         {
             context.Wait(MessageReceivedAsync);
@@ -117,6 +164,12 @@ namespace Bot.Dialogs
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 1st Step of Bot. 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -133,6 +186,12 @@ namespace Bot.Dialogs
             }
         }
 
+        /// <summary>
+        /// Connects when Loan Amount Received.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task LoanAmountReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -185,6 +244,12 @@ namespace Bot.Dialogs
             }
         }
 
+        /// <summary>
+        /// Connects when Type of Car
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task TypeOfCarReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             //Get Url Implementation
@@ -252,6 +317,12 @@ namespace Bot.Dialogs
             }
         }
         
+        /// <summary>
+        /// Connects for Verification.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task CheckForVarification(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -293,6 +364,12 @@ namespace Bot.Dialogs
 
         }
 
+        /// <summary>
+        /// Connects when bot reaches First Question for Verification
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task FirstQuestionAnswer(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -344,6 +421,12 @@ namespace Bot.Dialogs
 
         }
 
+        /// <summary>
+        /// Connects when bot reaches Second Question for Verification
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task SecondQuestionAnswer(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -419,6 +502,12 @@ namespace Bot.Dialogs
             
         }
 
+        /// <summary>
+        /// Connects when there is a need for Loan Terms
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task LoanTerms(IDialogContext context, IAwaitable<object> result)
         {
             
@@ -510,6 +599,13 @@ namespace Bot.Dialogs
 
         }
         
+        /// <summary>
+        /// Connects when need to get year of Vehicle for 
+        /// Old car loan.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task YearOfVehicle(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
@@ -552,6 +648,12 @@ namespace Bot.Dialogs
             }
         }
         
+        /// <summary>
+        /// Connects when bank offer is selected.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task BankOffers(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
