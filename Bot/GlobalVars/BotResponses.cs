@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Bot.GlobalVars
+﻿namespace Bot.GlobalVars
 {
     public class BotResponses
     {
         public static string WelcomeMessage { get; set; } =
             "Welcome to the turboLoan Car Loan Application.  For Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR \n\nPlease enter in the amount you wish to borrow?";
 
+        public static string ChangeTermsPrompt { get; set; } = "Please Enter new terms starting 1 year to 6 years \n\nShorter Terms\n\n Example: 1,2,3 \n\nLonger Terms \n\n Example: 4,5,6";
+        public static string LoanShortLong { get; set; } =
+            "To see shorter terms, enter SHORTER To see longer terms, enter LONGER.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.";
         public static string InitiationPropmpt { get; set; } = "Send \"Loan\" to this number to get started!";
 
         public static string HelpText { get; set; } =

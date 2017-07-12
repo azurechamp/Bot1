@@ -18,6 +18,7 @@ namespace Bot.Dialogs
         #region definitions
         VerificationObject _retainedObj;
         readonly Queue<ChatMessage> _chatHistory = new Queue<ChatMessage>();
+        private int bankId;
         #endregion
 
         #region GenericMethods
@@ -439,14 +440,14 @@ namespace Bot.Dialogs
                 Thread.Sleep(200);
 
                 var packages = "";
-                foreach (var bankInfo in jsonModel.BankInfo)
+                foreach (var bankInfo in jsonModel.BankInfo) { 
                     packages +=
-                        $"{bankInfo.BankId}) {bankInfo.BankName} {bankInfo.Amount} {bankInfo.Term} {bankInfo.Rate}  \n\n";
+                        $"{bankInfo.BankId}) {bankInfo.BankName} {bankInfo.Amount} {bankInfo.Term} {bankInfo.Rate}  \n\n";}
                 await context.PostAsync(packages);
                 AddMessagetoHistory(packages, "Bot");
                 Thread.Sleep(200);
-                await context.PostAsync(
-                    "To see shorter terms, enter SHORTER To see longer terms, enter LONGER To change the loan amount  please enter in a new Loan Amount.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.");
+                await context.PostAsync(BotResponses.LoanShortLong);
+                bankId =  jsonModel.BankInfo[jsonModel.BankInfo.Count - 1].BankId;
                 context.Wait(BankOffers);
             }
             else
@@ -496,22 +497,41 @@ namespace Bot.Dialogs
         private async Task BankOffers(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (activity != null && (activity.Text.Equals("1") || activity.Text.Equals("2") ||
-                                     activity.Text.Equals("3") || activity.Text.Equals("4") ||
-                                     activity.Text.Equals("5") || activity.Text.Equals("6") ||
-                                     activity.Text.Equals("7") || activity.Text.Equals("8") ||
-                                     activity.Text.Equals("9")))
+            if (activity != null )
             {
+                int selectedItem;
+                Int32.TryParse(activity.Text.Trim(), out selectedItem);
                 AddMessagetoHistory(activity.Text, "User");
+                if (selectedItem > 0 && selectedItem <= bankId)
+                {
 
-                
-                context.Wait(MessageReceivedAsync);
-                VerificationModel jsonModel = await FinalVerification(activity);
-                Thread.Sleep(1000);
-                SaveandPushLog();
-                Thread.Sleep(1000);
-                await FinalStep(context, jsonModel);
+                    context.Wait(MessageReceivedAsync);
+                    VerificationModel jsonModel = await FinalVerification(activity);
+                    Thread.Sleep(2000);
+                    SaveandPushLog();
+                    Thread.Sleep(1000);
+                    await FinalStep(context, jsonModel);
+                }
+                else
+                {
+                    if (activity.Text.ToLower().Equals("shorter"))
+                    {
+                        await context.PostAsync(BotResponses.ChangeTermsPrompt);
+                        context.Wait(LoanTerms);
 
+                    }
+                    else if (activity.Text.ToLower().Equals("longer"))
+                    {
+                        await context.PostAsync(BotResponses.ChangeTermsPrompt);
+                        context.Wait(LoanTerms);
+                    }
+                    else
+                    {
+
+                        await context.PostAsync(BotResponses.InvalidInputText + $" Select the value again.");
+                        context.Wait(BankOffers);
+                    }
+                }
             }
             else
             {
