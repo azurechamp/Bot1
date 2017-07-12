@@ -20,11 +20,10 @@ namespace Bot.Dialogs
         readonly Queue<ChatMessage> _chatHistory = new Queue<ChatMessage>();
         #endregion
 
-
         #region GenericMethods
         private static async Task<string> ParseJson(string url)
         {
-            string jsonString = "";
+            var jsonString = "";
             try
             {
                 var client = new HttpClient();
@@ -458,9 +457,7 @@ namespace Bot.Dialogs
             }
 
         }
-
-       
-
+        
         private async Task YearOfVehicle(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
