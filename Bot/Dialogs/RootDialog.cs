@@ -12,6 +12,10 @@ using Newtonsoft.Json;
 
 namespace Bot.Dialogs
 {
+    /// <summary>
+    /// Class: Root Dialog
+    /// 
+    /// </summary>
     [Serializable]
     public class RootDialog : IDialog<object>
     {
@@ -106,7 +110,9 @@ namespace Bot.Dialogs
         /// <returns></returns>
         private static async Task FinalStep(IDialogContext context, VerificationModel jsonModel)
         {
-            await context.PostAsync($"Your Huntington Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. Please click the link below to finish your application,  or provide this number to your dealer.{jsonModel.URL}");
+
+            //TODO: Add Bank Name
+            await context.PostAsync($"Your {jsonModel.BankInfo} Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. \n\nPlease click the link below to finish your application,  or provide this number to your dealer.\n\n{jsonModel.URL}");
         }
         /// <summary>
         /// Sends selected Terms of bank back to API and get
@@ -173,7 +179,7 @@ namespace Bot.Dialogs
         private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (activity != null && activity.Text.ToLower().Equals("loan"))
+            if (activity != null && (activity.Text.ToLower().Equals("loan")|| activity.Text.ToLower().Equals("hello")))
             {
                 await context.PostAsync(BotResponses.WelcomeMessage);
                 AddMessagetoHistory(BotResponses.WelcomeMessage, "Bot");
@@ -216,7 +222,7 @@ namespace Bot.Dialogs
             }
             else
             {
-                if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+                if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                          activity.Text.ToLower().Equals("stop")))
                 {
                     await context.PostAsync(BotResponses.BotReset);
@@ -301,7 +307,7 @@ namespace Bot.Dialogs
             }
             else
             {
-                if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+                if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                          activity.Text.ToLower().Equals("stop")))
                 {
                     await context.PostAsync(BotResponses.BotReset);
@@ -311,7 +317,7 @@ namespace Bot.Dialogs
                 if (activity != null && (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))) { }
                 else
                 {
-                    await context.PostAsync($"{BotResponses.InvalidInputText} \n\nPlease enter Used/New" );
+                    await context.PostAsync($"{BotResponses.InvalidAmount}" );
                     context.Wait(TypeOfCarReceivedAsync);
                 }
             }
@@ -326,7 +332,7 @@ namespace Bot.Dialogs
         private async Task CheckForVarification(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                      activity.Text.ToLower().Equals("stop")))
             {
                 await context.PostAsync(BotResponses.BotReset);
@@ -350,8 +356,8 @@ namespace Bot.Dialogs
                 await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
                 AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}","Bot");
                 if (_retainedObj.License.Question1 != null)
-                    await context.PostAsync($"Q:{_retainedObj.License.Question1.question}");
-                    AddMessagetoHistory($"Q:{_retainedObj.License.Question1?.question}","Bot");
+                    await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
+                    AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}","Bot");
                 context.Wait(FirstQuestionAnswer);
             }
             else if (_retainedObj.License.Verified.Equals("No"))
@@ -396,7 +402,7 @@ namespace Bot.Dialogs
                 context.Wait(SecondQuestionAnswer);
 
             }
-            else if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+            else if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                      activity.Text.ToLower().Equals("stop")))
             {
                 await context.PostAsync(BotResponses.BotReset);
@@ -431,7 +437,7 @@ namespace Bot.Dialogs
         {
             var activity = await result as Activity;
 
-            if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                      activity.Text.ToLower().Equals("stop")))
             {
                 await context.PostAsync(BotResponses.BotReset);
@@ -483,7 +489,7 @@ namespace Bot.Dialogs
                 }
                 
             }
-            else if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+            else if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                      activity.Text.ToLower().Equals("stop")))
             {
                 await context.PostAsync(BotResponses.BotReset);
@@ -512,7 +518,7 @@ namespace Bot.Dialogs
         {
             
             var activity = await result as Activity;
-            if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                      activity.Text.ToLower().Equals("stop")))
             {
                 await context.PostAsync(BotResponses.BotReset);
@@ -561,7 +567,7 @@ namespace Bot.Dialogs
 
             if (activity != null && !String.IsNullOrEmpty(jsonResponse))
             {
-                if (activity.Text.ToLower().Equals("cancel") ||
+                if (activity.Text.ToLower().Equals("reset") ||
                                          activity.Text.ToLower().Equals("stop"))
                 {
                     await context.PostAsync(BotResponses.BotReset);
@@ -576,11 +582,11 @@ namespace Bot.Dialogs
                     Thread.Sleep(200);
 
                     var packages = "";
-                    packages += BotResponses.TermsHeader;
+                    //packages += BotResponses.TermsHeader;
                     foreach (var bankInfo in jsonModel.BankInfo)
                     {
                         packages +=
-                            $"{bankInfo.BankId}) {bankInfo.BankName} | {bankInfo.Amount} | {bankInfo.Term} | {bankInfo.Rate}  \n\n";
+                            $"{bankInfo.BankId}) {bankInfo.BankName} - ${bankInfo.Amount} - {bankInfo.Term} months @ {bankInfo.Rate}%  \n\n";
                     }
                     await context.PostAsync(packages);
                     AddMessagetoHistory(packages, "Bot");
@@ -634,7 +640,7 @@ namespace Bot.Dialogs
             else
             {
                 if (activity != null && (activity.Text.ToLower().Contains("help") || activity.Text.ToLower().Contains("terms"))) { }
-                else if (activity != null && (activity.Text.ToLower().Equals("cancel") ||
+                else if (activity != null && (activity.Text.ToLower().Equals("reset") ||
                                               activity.Text.ToLower().Equals("stop")))
                 {
                     await context.PostAsync(BotResponses.BotReset);

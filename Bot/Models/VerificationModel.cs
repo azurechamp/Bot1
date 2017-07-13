@@ -10,5 +10,6 @@ namespace Bot.Models
     {
         public string Code { get; set; }
         public string URL { get; set; }
+        public string BankInfo { get; set; }
     }
 }
