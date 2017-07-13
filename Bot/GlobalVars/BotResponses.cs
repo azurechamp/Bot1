@@ -5,7 +5,7 @@
         public static string BotReset { get; set; } = "LOAN BOT RESET ! TEXT \"LOAN\" TO START AGAIN!";
         public static string InvalidAmount { get; set; } = "Please enter NEW is this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =
-            "Welcome to the turboLoan Car Loan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR \n\nPlease enter in the amount you wish to borrow?";
+            "Welcome to the turboLoan Car Loan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR \n\n \n\nPlease enter in the amount you wish to borrow?";
         public  static string TermsHeader { get; set; } = "    Bank Name | Amount | Term | Rate \n\n";
         public static string ChangeTermsPrompt { get; set; } = "Please Enter new terms starting 1 year to 6 years \n\nShorter Terms\n\n Example: 1,2,3 \n\nLonger Terms \n\n Example: 4,5,6";
         public static string LoanShortLong { get; set; } =

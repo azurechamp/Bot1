@@ -332,18 +332,32 @@ namespace Bot.Dialogs
         private async Task CheckForVarification(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
-                                     activity.Text.ToLower().Equals("stop")))
-            {
-                await context.PostAsync(BotResponses.BotReset);
-                context.Wait(MessageReceivedAsync);
-            }
-            if (activity != null)
+            if (activity != null && activity.Attachments != null)
                 foreach (var attachment in activity.Attachments)
                 {
                     var unused = attachment;
+                    var attachmentUrl =
+                        unused.ContentUrl;
+                    var httpClient = new HttpClient();
+
+                    var attachmentData =
+                        await httpClient.GetByteArrayAsync(attachmentUrl);
+                    String s = Convert.ToBase64String(attachmentData);
+                    await context.PostAsync(s);
+                    //TODO: Push This data to server and refactor the code.
+
+                }
+            else
+            {
+
+                if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                         activity.Text.ToLower().Equals("stop")))
+                {
+                    await context.PostAsync(BotResponses.BotReset);
+                    context.Wait(MessageReceivedAsync);
                 }
 
+            }
             string jsonString = await ParseJson(UrlEndpoints.ValidationUrl);
             var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
 
