@@ -166,6 +166,7 @@ namespace Bot.Dialogs
         public Task StartAsync(IDialogContext context)
         {
             context.Wait(MessageReceivedAsync);
+           
 
             return Task.CompletedTask;
         }
@@ -183,6 +184,9 @@ namespace Bot.Dialogs
             {
                 await context.PostAsync(BotResponses.WelcomeMessage);
                 AddMessagetoHistory(BotResponses.WelcomeMessage, "Bot");
+                await context.PostAsync(BotResponses.LoanPrompt);
+                AddMessagetoHistory(BotResponses.LoanPrompt, "Bot");
+
                 context.Wait(LoanAmountReceivedAsync);
             }
             else
