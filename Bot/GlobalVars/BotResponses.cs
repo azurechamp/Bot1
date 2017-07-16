@@ -7,6 +7,9 @@
         public static string WelcomeMessage { get; set; } =
             "Welcome to the turboLoan Car Loan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR \n\n \n\n";
         public static string LoanPrompt { get; set; } = "Please enter in the amount you wish to borrow?";
+
+        public static string UnableToVerifyLicense { get; set; } =
+            "Unfortunately due to unclear image or some other reason we are unable to verify your driving license \n\nPlease contact our support or try process again.";
         public  static string TermsHeader { get; set; } = "    Bank Name | Amount | Term | Rate \n\n";
         public static string ChangeTermsPrompt { get; set; } = "Please Enter new terms starting 1 year to 6 years \n\nShorter Terms\n\n Example: 1,2,3 \n\nLonger Terms \n\n Example: 4,5,6";
         public static string LoanShortLong { get; set; } =
@@ -24,7 +27,7 @@
         public static string InvalidInputText { get; set; } = "Please enter a valid value !";
 
         public static string ImageUploadPromptText1 { get; set; } =
-            "Please click the link below to upload a photo of your drivers license";
+            "Please click on url below to upload a photo of the back of your drivers license, or simply send a photo via texting\n\n";
 
         public static string ImageUploadPromptText2 { get; set; } = "When you are done, press 1 and send!";
 

@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Bot.Commons;
 using Bot.GlobalVars;
 using Bot.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
 
 namespace Bot.Dialogs
@@ -26,6 +35,42 @@ namespace Bot.Dialogs
         #endregion
 
         #region GenericMethods
+
+
+        private static async Task ImageUploadTask(Stream imageStream, string CustomerId)
+        {
+            
+            string containerName = "license";
+
+            // Retrieve storage account information from connection string
+            CloudStorageAccount storageAccount = Common.CreateStorageAccountFromConnectionString();
+
+            // Create a blob client for interacting with the blob service.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            Console.WriteLine("1. Creating Container");
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+            try
+            {
+                BlobRequestOptions requestOptions = new BlobRequestOptions() { RetryPolicy = new NoRetry() };
+                await container.CreateIfNotExistsAsync(requestOptions, null);
+            }
+            catch (StorageException)
+            {
+                Console.WriteLine("If you are running with the default connection string, please make sure you have started the storage emulator. Press the Windows key and type Azure Storage to select and run it from the list of applications - then restart the sample.");
+                Console.ReadLine();
+                throw;
+            }
+
+            
+            Console.WriteLine("2. Uploading BlockBlob");
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(CustomerId);
+            blockBlob.Properties.ContentType = "image/png";
+            await blockBlob.UploadFromStreamAsync(imageStream);
+
+        }
+
+
+
         /// <summary>
         /// Generic Method to Parse JSON for making code less redundant
         /// </summary>
@@ -101,6 +146,7 @@ namespace Bot.Dialogs
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
+         
         }
         /// <summary>
         /// Final Prompt Implementation
@@ -293,7 +339,7 @@ namespace Bot.Dialogs
                 AddMessagetoHistory(activity.Text, "User");
                 ChatModel.CarType = "used";
                 await context.PostAsync($"{BotResponses.ImageUploadPromptText1} {url}");
-                await context.PostAsync(BotResponses.ImageUploadPromptText2);
+              //  await context.PostAsync(BotResponses.ImageUploadPromptText2);
                 AddMessagetoHistory($"{BotResponses.ImageUploadPromptText1} {url}", "Bot");
                 context.Wait(CheckForVarification);
 
@@ -303,7 +349,7 @@ namespace Bot.Dialogs
                 AddMessagetoHistory(activity.Text,"User");
                 ChatModel.CarType = "new";
                 await context.PostAsync($"{BotResponses.ImageUploadPromptText1} {url}");
-                await context.PostAsync(BotResponses.ImageUploadPromptText2);
+                //await context.PostAsync(BotResponses.ImageUploadPromptText2);
                 AddMessagetoHistory($"{BotResponses.ImageUploadPromptText1} {url}", "Bot");
                 context.Wait(CheckForVarification);
                 //MessageReceivedAsync
@@ -336,6 +382,7 @@ namespace Bot.Dialogs
         private async Task CheckForVarification(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
+            bool success = false;
             if (activity != null && activity.Attachments != null)
                 foreach (var attachment in activity.Attachments)
                 {
@@ -346,8 +393,55 @@ namespace Bot.Dialogs
 
                     var attachmentData =
                         await httpClient.GetByteArrayAsync(attachmentUrl);
-                    String s = Convert.ToBase64String(attachmentData);
-                    await context.PostAsync(s);
+                    Stream stream = new MemoryStream(attachmentData);
+                    await ImageUploadTask(stream, ChatModel.CustomerId);
+                    try
+                    {
+
+                        var request = (HttpWebRequest)WebRequest.Create("http://visiloanapi.azurewebsites.net/api/customer/PostImageData");
+
+                        var postData = $"CustomerId={ChatModel.CustomerId}";
+                        postData += $"&Url={UrlEndpoints.BlobBaseUrl}";
+                        var data = Encoding.ASCII.GetBytes(postData);
+
+                        request.Method = "POST";
+                        request.ContentType =  "application/x-www-form-urlencoded";
+                        request.ContentLength = data.Length;
+
+                        using (var steam = request.GetRequestStream())
+                        {
+                            steam.Write(data, 0, data.Length);
+                        }
+
+                        var response = (HttpWebResponse)request.GetResponse();
+                        var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                        var modelResult = JsonConvert.DeserializeObject<PostImageDataModel>(responseString);
+                        if (modelResult.Code.Trim().Equals("200"))
+                        {
+                            success = true;
+                        }
+
+                        //using (var client = new HttpClient())
+                        //{
+                        //    client.BaseAddress = new Uri(UrlEndpoints.BaseUrl);
+                        //    var content = new FormUrlEncodedContent(new[]
+                        //    {
+                        //        new KeyValuePair<string, string>("CustomerId", ChatModel.CustomerId),
+                        //        new KeyValuePair<string, string>("Url",
+                        //            $"{UrlEndpoints.BlobBaseUrl}{ChatModel.CustomerId}"),
+                        //    });
+                        //    var apiResponseMessage = await client.PostAsync("/api/customer/PostImageData", content);
+                        //    string resultContent = await apiResponseMessage.Content.ReadAsStringAsync();
+                        //    Console.WriteLine(resultContent);
+                        //}
+                    }
+                    catch (Exception exception)
+                    {
+                        
+                        Console.WriteLine(exception.Message);
+                    }
+                    break;
                     //TODO: Push This data to server and refactor the code.
 
                 }
@@ -362,29 +456,40 @@ namespace Bot.Dialogs
                 }
 
             }
-            string jsonString = await ParseJson(UrlEndpoints.ValidationUrl);
-            var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
-
-            _retainedObj = res;
-
-            Thread.Sleep(1000);
-
-            if (_retainedObj.License.Verified.Equals("Yes"))
+            if (success.Equals(true))
             {
-                await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
-                AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}","Bot");
-                if (_retainedObj.License.Question1 != null)
-                    await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
-                    AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}","Bot");
-                context.Wait(FirstQuestionAnswer);
-            }
-            else if (_retainedObj.License.Verified.Equals("No"))
-            {
-                await context.PostAsync(BotResponses.UnableToVerifyText);
-                AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
-                context.Wait(CheckForVarification);
-            }
+                string jsonString = await ParseJson(UrlEndpoints.ValidationUrl+ $"?cid={ChatModel.CustomerId}");
+                var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
 
+                _retainedObj = res;
+
+                Thread.Sleep(1000);
+
+                if (_retainedObj.License.Verified.Equals("Yes"))
+                {
+                    await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
+                    AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}", "Bot");
+                    if (_retainedObj.License.Question1 != null)
+                        await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
+                    AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
+                    context.Wait(FirstQuestionAnswer);
+                }
+                else if (_retainedObj.License.Verified.Equals("No"))
+                {
+                    await context.PostAsync(BotResponses.UnableToVerifyText);
+                    AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                    context.Wait(CheckForVarification);
+                }
+            }
+            else
+            {
+                await context.PostAsync(BotResponses.UnableToVerifyLicense);
+                AddMessagetoHistory(BotResponses.UnableToVerifyLicense, "Bot");
+                context.Wait(MessageReceivedAsync);
+                //display respective message and wait for response
+
+
+            }
 
         }
 
@@ -692,8 +797,8 @@ namespace Bot.Dialogs
 
                     context.Wait(MessageReceivedAsync);
                     VerificationModel jsonModel = await FinalVerification(activity);
-                    Thread.Sleep(2000);
-                    SaveandPushLog();
+                   // Thread.Sleep(2000);
+                   // SaveandPushLog();
                     Thread.Sleep(1000);
                     await FinalStep(context, jsonModel);
                 }
