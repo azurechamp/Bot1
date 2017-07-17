@@ -14,7 +14,7 @@
         public static string ChangeTermsPrompt { get; set; } = "Please Enter new terms starting 1 year to 6 years \n\nShorter Terms\n\n Example: 1,2,3 \n\nLonger Terms \n\n Example: 4,5,6";
         public static string LoanShortLong { get; set; } =
             "To see shorter terms, enter SHORTER To see longer terms, enter LONGER.\n\nOtherwise please select one  of the offers above to receive your preapproval authorization code.";
-        public static string InitiationPropmpt { get; set; } = "Send \"Loan\" to this number to get started!";
+        public static string InitiationPropmpt { get; set; } = "Send \"Loan\"  or say \"Hello\" to this number to get started!";
 
         public static string HelpText { get; set; } =
             "HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
