@@ -2,10 +2,10 @@
 {
     public class BotResponses
     {
-        public static string BotReset { get; set; } = "LOAN BOT RESET ! TEXT \"LOAN\" TO START AGAIN!";
+        public static string BotReset { get; set; } = "BOT RESET! Please start again!";
         public static string InvalidAmount { get; set; } = "Please enter NEW is this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =
-            "Welcome to the turboLoan Car Loan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR \n\n \n\n";
+            "Welcome to the turboLoan Car Loan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR and follow along. \n\n \n\n";
         public static string LoanPrompt { get; set; } = "Please enter in the amount you wish to borrow?";
 
         public static string UnableToVerifyLicense { get; set; } =
@@ -22,12 +22,13 @@
         public static string TermsText { get; set; } =
             "A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
 
-        public static string CarQuestionText { get; set; } = "Is this for a New or Used car?";
+        public static string CarQuestionText { get; set; } = "Is this for a \"New\" or \"Used\" car?";
 
         public static string InvalidInputText { get; set; } = "Please enter a valid value !";
 
+        public static string PreImageuploadUrlPrompt { get; set; } = "Please click on this url";
         public static string ImageUploadPromptText1 { get; set; } =
-            "Please click on url below to upload a photo of the back of your drivers license, or simply send a photo via texting\n\n";
+            " to upload a photo of the back of your drivers license, or simply send a photo via texting\n\n";
 
         public static string ImageUploadPromptText2 { get; set; } = "When you are done, press 1 and send!";
 
@@ -36,7 +37,6 @@
 
         public static string UnableToVerifyText { get; set; } =
             "Unable to validate drivers license. Please upload a new photo with minimal glare and fits to the picture area \n\nWhen you are done, press 1 and send!";
-
 
         public static string VehicleYearPromptText { get; set; } = "Please enter the year of the vehicle?";
 
@@ -49,6 +49,7 @@
         public static string trterms1 { get; set; } =
             "Obtain Quotes From Lenders \n\n(Lender selection based upon loan type, state, amount)";
 
+        public static string imageSuggestPrompt { get; set; } = "We request you to upload the image on url described above. \n\nOtherwise wait for the response from our verification server. ";
         public static string termsPrompt { get; set; } =
             "Please enter length of loan term in year(s). For multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?";
 

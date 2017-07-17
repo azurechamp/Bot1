@@ -158,7 +158,7 @@ namespace Bot.Dialogs
         {
 
             //TODO: Add Bank Name
-            await context.PostAsync($"Your {jsonModel.BankInfo} Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. \n\nPlease click the link below to finish your application,  or provide this number to your dealer.\n\n{jsonModel.URL}");
+            await context.PostAsync($"Your {jsonModel.BankInfo} Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. \n\nPlease click on the link {jsonModel.URL} to finish your application,  or provide this number to your dealer.\n\n");
         }
         /// <summary>
         /// Sends selected Terms of bank back to API and get
@@ -338,9 +338,9 @@ namespace Bot.Dialogs
 
                 AddMessagetoHistory(activity.Text, "User");
                 ChatModel.CarType = "used";
-                await context.PostAsync($"{BotResponses.ImageUploadPromptText1} {url}");
+                await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
               //  await context.PostAsync(BotResponses.ImageUploadPromptText2);
-                AddMessagetoHistory($"{BotResponses.ImageUploadPromptText1} {url}", "Bot");
+                AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
                 context.Wait(CheckForVarification);
 
             }
@@ -348,9 +348,9 @@ namespace Bot.Dialogs
             {
                 AddMessagetoHistory(activity.Text,"User");
                 ChatModel.CarType = "new";
-                await context.PostAsync($"{BotResponses.ImageUploadPromptText1} {url}");
+                await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
                 //await context.PostAsync(BotResponses.ImageUploadPromptText2);
-                AddMessagetoHistory($"{BotResponses.ImageUploadPromptText1} {url}", "Bot");
+                AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
                 context.Wait(CheckForVarification);
                 //MessageReceivedAsync
 
@@ -483,14 +483,12 @@ namespace Bot.Dialogs
             }
             else
             {
-                await context.PostAsync(BotResponses.UnableToVerifyLicense);
-                AddMessagetoHistory(BotResponses.UnableToVerifyLicense, "Bot");
-                context.Wait(MessageReceivedAsync);
+                    await context.PostAsync(BotResponses.imageSuggestPrompt);
+                    AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
+                   //Check for hook or image
+               
                 //display respective message and wait for response
-
-
             }
-
         }
 
         /// <summary>
