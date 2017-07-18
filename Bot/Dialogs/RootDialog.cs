@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -36,7 +37,21 @@ namespace Bot.Dialogs
 
         #region GenericMethods
 
-
+        /// <summary>
+        /// Read Key from Web.Config
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string ReadSetting(string key)
+        {
+            return ConfigurationSettings.AppSettings[key];
+        }
+        /// <summary>
+        /// Upload Image to Azure Blob Storage
+        /// </summary>
+        /// <param name="imageStream"></param>
+        /// <param name="CustomerId"></param>
+        /// <returns></returns>
         private static async Task ImageUploadTask(Stream imageStream, string CustomerId)
         {
             
@@ -68,9 +83,7 @@ namespace Bot.Dialogs
             await blockBlob.UploadFromStreamAsync(imageStream);
 
         }
-
-
-
+        
         /// <summary>
         /// Generic Method to Parse JSON for making code less redundant
         /// </summary>
@@ -203,6 +216,8 @@ namespace Bot.Dialogs
             }
         }
         #endregion
+        
+        #region BotFlow
 
         /// <summary>
         /// Starts the Bot
@@ -696,11 +711,13 @@ namespace Bot.Dialogs
                 }
                 else
                 {
-                    await context.PostAsync(BotResponses.trterms1);
-                    Thread.Sleep(200);
+                  //  await context.PostAsync(BotResponses.trterms1);
+                  //  Thread.Sleep(200);
+                    
+                    
                     await context.PostAsync(
-                        $"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout}");
-                    Thread.Sleep(200);
+                        $"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout:#,##0.00}");
+                    Thread.Sleep(500);
 
                     var packages = "";
                     //packages += BotResponses.TermsHeader;
@@ -827,7 +844,7 @@ namespace Bot.Dialogs
             }
         }
 
-        
+        #endregion
 
     }
 }

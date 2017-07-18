@@ -28,6 +28,11 @@ namespace Bot
             return response;
         }
 
+        /// <summary>
+        /// System Message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private Activity HandleSystemMessage(Activity message)
         {
             if (message.Type == ActivityTypes.DeleteUserData)

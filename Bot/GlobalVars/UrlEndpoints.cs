@@ -4,7 +4,7 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Bot.GlobalVars
 {
     [Serializable]
-    public class UrlEndpoints
+    public  class UrlEndpoints
     {
         public static string BaseUrl { get; set; } = "http://visiloanapi.azurewebsites.net/api";
         public static string ValidationUrl { get; set; } = "http://visiloanapi.azurewebsites.net/api/customer/getquestionsapi";//cid=157
