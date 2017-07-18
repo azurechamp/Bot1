@@ -20,7 +20,7 @@
             "HELP\n\n \n\nTERMS – for complete terms and conditions \n\nRESET – Start over \n\nFor complete help please click the link below: https://is.gd/insS5X \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
 
         public static string TermsText { get; set; } =
-            "A complete list of the terms and conditions can be found at turboLoans.com or by clicking the link below:https://is.gd/K7a43A \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
+            "A complete list of the terms and conditions can be found at visiloanapi.azurewebsites.net or by clicking the link below:https://is.gd/K7a43A \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
 
         public static string CarQuestionText { get; set; } = "Is this for a \"New\" or \"Used\" car?";
 
