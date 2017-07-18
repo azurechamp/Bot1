@@ -5,7 +5,7 @@
         public static string BotReset { get; set; } = "BOT RESET! Please start again!";
         public static string InvalidAmount { get; set; } = "Please enter NEW is this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =
-            "Welcome to the turboLoan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/soMHVR \n\n \n\n";
+            "Welcome to the turboLoan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/K7a43A \n\n \n\n";
         public static string LoanPrompt { get; set; } = "Please enter in the amount you wish to borrow?";
 
         public static string UnableToVerifyLicense { get; set; } =
@@ -17,10 +17,10 @@
         public static string InitiationPropmpt { get; set; } = "Send \"Loan\"  or say \"Hello\" to this number to get started!";
 
         public static string HelpText { get; set; } =
-            "HELP – This screen TERMS – for complete terms and conditions RESET – Start over \n\nFor complete help please click the link below: Https://short.bi/HELPMENOW \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
+            "HELP\n\n \n\nTERMS – for complete terms and conditions \n\nRESET – Start over \n\nFor complete help please click the link below: https://is.gd/insS5X \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
 
         public static string TermsText { get; set; } =
-            "A complete list of the terms and conditions can be found at turnLoans.com. Or clicking the link below: https://short.bi/UFHFHF \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
+            "A complete list of the terms and conditions can be found at turboLoans.com or by clicking the link below:https://is.gd/K7a43A \n\n© 2017 Visionet Systems \n\nwww.visionetsystems.com";
 
         public static string CarQuestionText { get; set; } = "Is this for a \"New\" or \"Used\" car?";
 

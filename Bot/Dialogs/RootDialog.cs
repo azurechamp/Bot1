@@ -477,7 +477,7 @@ namespace Bot.Dialogs
                 var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
 
                 _retainedObj = res;
-
+                
                 Thread.Sleep(1000);
 
                 if (_retainedObj.License.Verified.Equals("Yes"))
@@ -498,10 +498,32 @@ namespace Bot.Dialogs
             }
             else
             {
+                if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                         activity.Text.ToLower().Equals("stop")))
+                {
+                    await context.PostAsync(BotResponses.BotReset);
+                    context.Wait(MessageReceivedAsync);
+                    return;
+                }
+                else if (activity != null && activity.Text.ToLower().Contains("help"))
+                {
+                    await context.PostAsync(BotResponses.HelpText);
+                    AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                    context.Wait(LoanAmountReceivedAsync);
+                }
+                else if (activity != null && activity.Text.ToLower().Contains("terms"))
+                {
+                    await context.PostAsync(BotResponses.TermsText);
+                    AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                    context.Wait(LoanAmountReceivedAsync);
+                }
+                else
+                {
+
                     await context.PostAsync(BotResponses.imageSuggestPrompt);
                     AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
-                   //Check for hook or image
-               
+                    //Check for hook or image
+                }
                 //display respective message and wait for response
             }
         }
@@ -521,6 +543,13 @@ namespace Bot.Dialogs
                 await context.PostAsync(BotResponses.HelpText);
                 AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(FirstQuestionAnswer);
+            }
+            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                     activity.Text.ToLower().Equals("stop")))
+            {
+                await context.PostAsync(BotResponses.BotReset);
+                context.Wait(MessageReceivedAsync);
+                return;
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
@@ -573,12 +602,6 @@ namespace Bot.Dialogs
         {
             var activity = await result as Activity;
 
-            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
-                                     activity.Text.ToLower().Equals("stop")))
-            {
-                await context.PostAsync(BotResponses.BotReset);
-                context.Wait(MessageReceivedAsync);
-            }
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
@@ -660,87 +683,89 @@ namespace Bot.Dialogs
                 await context.PostAsync(BotResponses.BotReset);
                 context.Wait(MessageReceivedAsync);
             }
-            AddMessagetoHistory(activity?.Text,"User");
-            if (activity != null && activity.Text.ToLower().Contains("help"))
+            //AddMessagetoHistory(activity?.Text,"User");
+            else if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
                 AddMessagetoHistory(BotResponses.HelpText, "Bot");
                 context.Wait(LoanTerms);
             }
-            if (activity != null && activity.Text.ToLower().Contains("terms"))
+            else if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
                 AddMessagetoHistory(BotResponses.TermsText, "Bot");
                 context.Wait(LoanTerms);
             }
-
-            string jsonResponse="" ;
-            if (activity != null)
+            else
             {
-                try
+                //  if(activity.Text.Equals())
+                string jsonResponse = "";
+                if (activity != null)
                 {
-                    if (activity.Text.ToLower().Equals("all"))
-                        jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
-                                                       $"?amount={(int) ChatModel.LoanAmout}&terms=1,2,3,4,5,6&cid={ChatModel.CustomerId}");
-                    else
+                    try
                     {
-                        if (TermsValidation(activity))
-                        {
-
+                        if (activity.Text.ToLower().Equals("all"))
                             jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
-                                                           $"?amount={(int) ChatModel.LoanAmout}&terms={activity.Text}&cid={ChatModel.CustomerId}");
+                                                           $"?amount={(int) ChatModel.LoanAmout}&terms=1,2,3,4,5,6&cid={ChatModel.CustomerId}");
+                        else
+                        {
+                            if (TermsValidation(activity))
+                            {
+
+                                jsonResponse = await ParseJson(UrlEndpoints.GetBankPackages +
+                                                               $"?amount={(int) ChatModel.LoanAmout}&terms={activity.Text}&cid={ChatModel.CustomerId}");
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
-                catch (Exception e)
+
+                var jsonModel = JsonConvert.DeserializeObject<BankPackageModel>(jsonResponse);
+
+
+                if (activity != null && !String.IsNullOrEmpty(jsonResponse))
                 {
-                    Console.WriteLine(e.Message);
-                }
-            }
+                    if (activity.Text.ToLower().Equals("reset") ||
+                        activity.Text.ToLower().Equals("stop"))
+                    {
+                        await context.PostAsync(BotResponses.BotReset);
+                        context.Wait(MessageReceivedAsync);
+                    }
+                    else
+                    {
+                        //  await context.PostAsync(BotResponses.trterms1);
+                        //  Thread.Sleep(200);
 
-            var jsonModel = JsonConvert.DeserializeObject<BankPackageModel>(jsonResponse);
 
+                        await context.PostAsync(
+                            $"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout:#,##0.00}");
+                        Thread.Sleep(500);
 
-            if (activity != null && !String.IsNullOrEmpty(jsonResponse))
-            {
-                if (activity.Text.ToLower().Equals("reset") ||
-                                         activity.Text.ToLower().Equals("stop"))
-                {
-                    await context.PostAsync(BotResponses.BotReset);
-                    context.Wait(MessageReceivedAsync);
+                        var packages = "";
+                        //packages += BotResponses.TermsHeader;
+                        foreach (var bankInfo in jsonModel.BankInfo)
+                        {
+                            packages +=
+                                $"{bankInfo.BankId}) {bankInfo.BankName} - ${bankInfo.Amount} - {bankInfo.Term} months @ {bankInfo.Rate}%  \n\n";
+                        }
+                        await context.PostAsync(packages);
+                        AddMessagetoHistory(packages, "Bot");
+                        Thread.Sleep(200);
+                        await context.PostAsync(BotResponses.LoanShortLong);
+                        bankId = jsonModel.BankInfo[jsonModel.BankInfo.Count - 1].BankId;
+                        context.Wait(BankOffers);
+                    }
                 }
                 else
                 {
-                  //  await context.PostAsync(BotResponses.trterms1);
-                  //  Thread.Sleep(200);
-                    
-                    
-                    await context.PostAsync(
-                        $"Congratulations {_retainedObj.License.Name}.  Here are your pre-approved offers for a new car loan in the amount of ${ChatModel.LoanAmout:#,##0.00}");
-                    Thread.Sleep(500);
-
-                    var packages = "";
-                    //packages += BotResponses.TermsHeader;
-                    foreach (var bankInfo in jsonModel.BankInfo)
-                    {
-                        packages +=
-                            $"{bankInfo.BankId}) {bankInfo.BankName} - ${bankInfo.Amount} - {bankInfo.Term} months @ {bankInfo.Rate}%  \n\n";
-                    }
-                    await context.PostAsync(packages);
-                    AddMessagetoHistory(packages, "Bot");
-                    Thread.Sleep(200);
-                    await context.PostAsync(BotResponses.LoanShortLong);
-                    bankId = jsonModel.BankInfo[jsonModel.BankInfo.Count - 1].BankId;
-                    context.Wait(BankOffers);
+                    await context.PostAsync(BotResponses.InvalidInputText + $"\n\n");
+                    await context.PostAsync(BotResponses.LoanTermsPromptText);
+                    context.Wait(LoanTerms);
                 }
             }
-            else
-            {
-                await context.PostAsync(BotResponses.InvalidInputText + $"\n\n");
-                await context.PostAsync(BotResponses.LoanTermsPromptText);
-                context.Wait(LoanTerms);
-            }
-
         }
         
         /// <summary>
@@ -791,7 +816,7 @@ namespace Bot.Dialogs
                 }
             }
         }
-        
+
         /// <summary>
         /// Connects when bank offer is selected.
         /// </summary>
@@ -801,46 +826,68 @@ namespace Bot.Dialogs
         private async Task BankOffers(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-           
-            if (!String.IsNullOrEmpty(activity?.Text))
+
+            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                     activity.Text.ToLower().Equals("stop")))
             {
-                int selectedItem;
-                Int32.TryParse(activity.Text.Trim(), out selectedItem);
-                AddMessagetoHistory(activity.Text, "User");
-                if (selectedItem > 0 && selectedItem <= bankId)
-                {
-
-                    context.Wait(MessageReceivedAsync);
-                    VerificationModel jsonModel = await FinalVerification(activity);
-                   // Thread.Sleep(2000);
-                   // SaveandPushLog();
-                    Thread.Sleep(1000);
-                    await FinalStep(context, jsonModel);
-                }
-                else
-                {
-                    if (activity.Text.ToLower().Equals("shorter"))
-                    {
-                        await context.PostAsync(BotResponses.ChangeTermsPrompt);
-                        context.Wait(LoanTerms);
-
-                    }
-                    else if (activity.Text.ToLower().Equals("longer"))
-                    {
-                        await context.PostAsync(BotResponses.ChangeTermsPrompt);
-                        context.Wait(LoanTerms);
-                    }
-                    else
-                    {
-
-                        await context.PostAsync(BotResponses.InvalidInputText + $" Select the value again.");
-                        context.Wait(BankOffers);
-                    }
-                }
+                await context.PostAsync(BotResponses.BotReset);
+                context.Wait(MessageReceivedAsync);
+            }
+            //AddMessagetoHistory(activity?.Text,"User");
+            else if (activity != null && activity.Text.ToLower().Contains("help"))
+            {
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                context.Wait(LoanTerms);
+            }
+            else if (activity != null && activity.Text.ToLower().Contains("terms"))
+            {
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                context.Wait(LoanTerms);
             }
             else
             {
-                context.Wait(MessageReceivedAsync);
+                if (!String.IsNullOrEmpty(activity?.Text))
+                {
+                    int selectedItem;
+                    Int32.TryParse(activity.Text.Trim(), out selectedItem);
+                    AddMessagetoHistory(activity.Text, "User");
+                    if (selectedItem > 0 && selectedItem <= bankId)
+                    {
+
+                        context.Wait(MessageReceivedAsync);
+                        VerificationModel jsonModel = await FinalVerification(activity);
+                        // Thread.Sleep(2000);
+                        // SaveandPushLog();
+                        Thread.Sleep(1000);
+                        await FinalStep(context, jsonModel);
+                    }
+                    else
+                    {
+                        if (activity.Text.ToLower().Equals("shorter"))
+                        {
+                            await context.PostAsync(BotResponses.ChangeTermsPrompt);
+                            context.Wait(LoanTerms);
+
+                        }
+                        else if (activity.Text.ToLower().Equals("longer"))
+                        {
+                            await context.PostAsync(BotResponses.ChangeTermsPrompt);
+                            context.Wait(LoanTerms);
+                        }
+                        else
+                        {
+
+                            await context.PostAsync(BotResponses.InvalidInputText + $" Select the value again.");
+                            context.Wait(BankOffers);
+                        }
+                    }
+                }
+                else
+                {
+                    context.Wait(MessageReceivedAsync);
+                }
             }
         }
 
