@@ -436,6 +436,7 @@ namespace Bot.Dialogs
                         {
                             success = true;
                         }
+                       
 
                         //using (var client = new HttpClient())
                         //{
@@ -498,31 +499,39 @@ namespace Bot.Dialogs
             }
             else
             {
-                if (activity != null && (activity.Text.ToLower().Equals("reset") ||
-                                         activity.Text.ToLower().Equals("stop")))
+                if (activity != null && !String.IsNullOrEmpty(activity.Text))
                 {
-                    await context.PostAsync(BotResponses.BotReset);
-                    context.Wait(MessageReceivedAsync);
-                    return;
-                }
-                else if (activity != null && activity.Text.ToLower().Contains("help"))
-                {
-                    await context.PostAsync(BotResponses.HelpText);
-                    AddMessagetoHistory(BotResponses.HelpText, "Bot");
-                    context.Wait(LoanAmountReceivedAsync);
-                }
-                else if (activity != null && activity.Text.ToLower().Contains("terms"))
-                {
-                    await context.PostAsync(BotResponses.TermsText);
-                    AddMessagetoHistory(BotResponses.TermsText, "Bot");
-                    context.Wait(LoanAmountReceivedAsync);
+                    if ((activity.Text.ToLower().Equals("reset") ||
+                         activity.Text.ToLower().Equals("stop")))
+                    {
+                        await context.PostAsync(BotResponses.BotReset);
+                        context.Wait(MessageReceivedAsync);
+                        return;
+                    }
+                    else if (activity.Text.ToLower().Contains("help"))
+                    {
+                        await context.PostAsync(BotResponses.HelpText);
+                        AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                        context.Wait(LoanAmountReceivedAsync);
+                    }
+                    else if (activity.Text.ToLower().Contains("terms"))
+                    {
+                        await context.PostAsync(BotResponses.TermsText);
+                        AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                        context.Wait(LoanAmountReceivedAsync);
+                    }
+                    else
+                    {
+
+                        await context.PostAsync(BotResponses.imageSuggestPrompt);
+                        AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
+                        //Check for hook or image
+                    }
                 }
                 else
                 {
-
-                    await context.PostAsync(BotResponses.imageSuggestPrompt);
-                    AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
-                    //Check for hook or image
+                    await context.PostAsync(BotResponses.unclearImagePrompt);
+                    AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot");
                 }
                 //display respective message and wait for response
             }

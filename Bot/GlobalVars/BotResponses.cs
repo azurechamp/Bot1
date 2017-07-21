@@ -50,6 +50,8 @@
             "Obtain Quotes From Lenders \n\n(Lender selection based upon loan type, state, amount)";
 
         public static string imageSuggestPrompt { get; set; } = "We request you to upload the image on url described above. \n\nOtherwise wait for the response from our verification server. ";
+        public static string unclearImagePrompt { get; set; } = "Image you uploaded is unclear and we are unable to process further. \n\nOption 1 - Upload a Clear Image \n\nOption 2 - Contact our support \n\n Options 3 - Start Over by sending \"RESET\". ";
+
         public static string termsPrompt { get; set; } =
             "Please enter length of loan term in year(s). For multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?";
 
