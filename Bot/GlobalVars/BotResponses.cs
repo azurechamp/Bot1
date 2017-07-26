@@ -1,4 +1,6 @@
-﻿namespace Bot.GlobalVars
+﻿using System.Net;
+
+namespace Bot.GlobalVars
 {
     public class BotResponses
     {
@@ -25,7 +27,11 @@
         public static string CarQuestionText { get; set; } = "Is this for a \"New\" or \"Used\" car?";
 
         public static string InvalidInputText { get; set; } = "Please enter a valid value !";
-
+        public static string PreWebUpload { get; set; } = "Please click on ";
+        public static string SmsUpload { get; set; } = "Please reply with a photo of the back of your drivers license to proceed.";
+        public static string SelectModeOfUpload { get; set; } = "Please select preferred mode (1 or 2) to upload backside image of your driver's license: \n\n1- SMS \n\n 2- Web(URL)";
+        public static string WebUpload { get; set; } = " to upload photo of the back of your driving license manually";
+        public static string SesssionExpired { get; set; } = "Session has expired ! Please start again.";
         public static string PreImageuploadUrlPrompt { get; set; } = "Please reply with a photo of the back of your drivers license, or click";
         public static string ImageUploadPromptText1 { get; set; } =
             " to upload a photo manually.\n\n";
@@ -55,6 +61,7 @@
         public static string termsPrompt { get; set; } =
             "Please enter length of loan term in year(s). For multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?";
 
-      
+        public static string imageHookTimeout { get; set; } = "Unfortunately session is suspended out as you haven't uploaded the image. Enter \"Continue\" resume session and upload image to url described above. ";
+
     }
 }

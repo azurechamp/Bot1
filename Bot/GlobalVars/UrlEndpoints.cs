@@ -11,5 +11,8 @@ namespace Bot.GlobalVars
         public static string GetUrlEndpoint { get; set; } = "http://visiloanapi.azurewebsites.net/api/customer/getuploadurl";
         public static string GetBankPackages { get; set; } = "http://visiloanapi.azurewebsites.net/api/customer/getbankoptions";
         public static string BlobBaseUrl { get; set; } = "https://dltextloan.blob.core.windows.net/license/";
+
+        public static string WebHookUrl { get; set; } =
+            "http://visiloanapi.azurewebsites.net/api/customer/CheckUploadUser?cid=";
     }
 }

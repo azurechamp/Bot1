@@ -149,6 +149,7 @@
     <Compile Include="Models\PostImageDataModel.cs" />
     <Compile Include="Models\VerificationModel.cs" />
     <Compile Include="Models\VerificationObject.cs" />
+    <Compile Include="Models\WebHookModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

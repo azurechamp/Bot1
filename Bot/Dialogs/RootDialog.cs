@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -36,6 +37,24 @@ namespace Bot.Dialogs
         #endregion
 
         #region GenericMethods
+
+
+        private static async Task<bool> CheckForUpload(bool success)
+        {
+            for (int i = 0; i < Utils.TimerMinutes; i++)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(30));
+                var data = await ParseJson($"{UrlEndpoints.WebHookUrl}{ChatModel.CustomerId}");
+                var model = JsonConvert.DeserializeObject<WebHookModel>(data);
+                if (model.Code.Equals("200"))
+                {
+                    success = true;
+                    break;
+                }
+            }
+
+            return success;
+        }
 
         /// <summary>
         /// Read Key from Web.Config
@@ -328,6 +347,7 @@ namespace Bot.Dialogs
             string jsonResponse = await ParseJson(UrlEndpoints.GetUrlEndpoint);
             var jsonModel = JsonConvert.DeserializeObject<GetUrlObject>(jsonResponse);
             var url = jsonModel.url;
+            ChatModel.URL = jsonModel.url;
             ChatModel.CustomerId = jsonModel.CustomerId;
            
             
@@ -350,24 +370,34 @@ namespace Bot.Dialogs
 
             if (activity != null && activity.Text.ToLower().Equals("used"))
             {
-
+                //TODO: Ask for way to upload the image
                 AddMessagetoHistory(activity.Text, "User");
                 ChatModel.CarType = "used";
-                await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
-              //  await context.PostAsync(BotResponses.ImageUploadPromptText2);
-                AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
-                context.Wait(CheckForVarification);
+                await context.PostAsync($"{BotResponses.SelectModeOfUpload}");
+                context.Wait(HowToSentImage);
+                //  await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
+                ////  await context.PostAsync(BotResponses.ImageUploadPromptText2);
+                //  AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
+                //context.Wait(CheckForVarification);
+                //context.Wait(CheckForVarification);
+
 
             }
             else if (activity != null && activity.Text.ToLower().Equals("new"))
             {
                 AddMessagetoHistory(activity.Text,"User");
                 ChatModel.CarType = "new";
-                await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
-                //await context.PostAsync(BotResponses.ImageUploadPromptText2);
-                AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
-                context.Wait(CheckForVarification);
+                //TODO: Ask for way to upload the image
+
+                await context.PostAsync($"{BotResponses.SelectModeOfUpload}");
+                context.Wait(HowToSentImage);
+                //await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
+                ////await context.PostAsync(BotResponses.ImageUploadPromptText2);
+                //AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
+                //context.Wait(CheckForVarification);
+                //Check for Call
                 //MessageReceivedAsync
+
 
             }
             else
@@ -389,152 +419,252 @@ namespace Bot.Dialogs
         }
         
         /// <summary>
-        /// Connects for Verification.
+        /// 
         /// </summary>
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private async Task CheckForVarification(IDialogContext context, IAwaitable<object> result)
+        private async Task HowToSentImage(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
             bool success = false;
-            if (activity != null && activity.Attachments != null)
-                foreach (var attachment in activity.Attachments)
-                {
-                    var unused = attachment;
-                    var attachmentUrl =
-                        unused.ContentUrl;
-                    var httpClient = new HttpClient();
-
-                    var attachmentData =
-                        await httpClient.GetByteArrayAsync(attachmentUrl);
-                    Stream stream = new MemoryStream(attachmentData);
-                    await ImageUploadTask(stream, ChatModel.CustomerId);
-                    try
-                    {
-
-                        var request = (HttpWebRequest)WebRequest.Create("http://visiloanapi.azurewebsites.net/api/customer/PostImageData");
-
-                        var postData = $"CustomerId={ChatModel.CustomerId}";
-                        postData += $"&Url={UrlEndpoints.BlobBaseUrl}";
-                        var data = Encoding.ASCII.GetBytes(postData);
-
-                        request.Method = "POST";
-                        request.ContentType =  "application/x-www-form-urlencoded";
-                        request.ContentLength = data.Length;
-
-                        using (var steam = request.GetRequestStream())
-                        {
-                            steam.Write(data, 0, data.Length);
-                        }
-
-                        var response = (HttpWebResponse)request.GetResponse();
-                        var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-                        var modelResult = JsonConvert.DeserializeObject<PostImageDataModel>(responseString);
-                        if (modelResult.Code.Trim().Equals("200"))
-                        {
-                            success = true;
-                        }
-                       
-
-                        //using (var client = new HttpClient())
-                        //{
-                        //    client.BaseAddress = new Uri(UrlEndpoints.BaseUrl);
-                        //    var content = new FormUrlEncodedContent(new[]
-                        //    {
-                        //        new KeyValuePair<string, string>("CustomerId", ChatModel.CustomerId),
-                        //        new KeyValuePair<string, string>("Url",
-                        //            $"{UrlEndpoints.BlobBaseUrl}{ChatModel.CustomerId}"),
-                        //    });
-                        //    var apiResponseMessage = await client.PostAsync("/api/customer/PostImageData", content);
-                        //    string resultContent = await apiResponseMessage.Content.ReadAsStringAsync();
-                        //    Console.WriteLine(resultContent);
-                        //}
-                    }
-                    catch (Exception exception)
-                    {
-                        
-                        Console.WriteLine(exception.Message);
-                    }
-                    break;
-                    //TODO: Push This data to server and refactor the code.
-
-                }
-            else
+            if (activity != null && activity.Text.ToLower().Contains("help"))
             {
-
-                if (activity != null && (activity.Text.ToLower().Equals("reset") ||
-                                         activity.Text.ToLower().Equals("stop")))
-                {
-                    await context.PostAsync(BotResponses.BotReset);
-                    context.Wait(MessageReceivedAsync);
-                }
-
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                context.Wait(TypeOfCarReceivedAsync);
             }
-            if (success.Equals(true))
+            else if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
-                string jsonString = await ParseJson(UrlEndpoints.ValidationUrl+ $"?cid={ChatModel.CustomerId}");
-                var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                context.Wait(TypeOfCarReceivedAsync);
+            }
+            else if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                          activity.Text.ToLower().Equals("stop")))
+            {
+                await context.PostAsync(BotResponses.BotReset);
+                context.Wait(MessageReceivedAsync);
 
-                _retainedObj = res;
-                
-                Thread.Sleep(1000);
-
-                if (_retainedObj.License.Verified.Equals("Yes"))
-                {
-                    await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
-                    AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}", "Bot");
-                    if (_retainedObj.License.Question1 != null)
-                        await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
-                    AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
-                    context.Wait(FirstQuestionAnswer);
-                }
-                else if (_retainedObj.License.Verified.Equals("No"))
-                {
-                    await context.PostAsync(BotResponses.UnableToVerifyText);
-                    AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
-                    context.Wait(CheckForVarification);
-                }
             }
             else
             {
-                if (activity != null && !String.IsNullOrEmpty(activity.Text))
+                if (activity != null && activity.Text.Equals("2"))
                 {
-                    if ((activity.Text.ToLower().Equals("reset") ||
-                         activity.Text.ToLower().Equals("stop")))
+                    await context.PostAsync($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}");
+                    AddMessagetoHistory($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}", "Bot");
+                    success = await CheckForUpload(success);
+                    if (success.Equals(true))
                     {
-                        await context.PostAsync(BotResponses.BotReset);
-                        context.Wait(MessageReceivedAsync);
-                        return;
-                    }
-                    else if (activity.Text.ToLower().Contains("help"))
-                    {
-                        await context.PostAsync(BotResponses.HelpText);
-                        AddMessagetoHistory(BotResponses.HelpText, "Bot");
-                        context.Wait(LoanAmountReceivedAsync);
-                    }
-                    else if (activity.Text.ToLower().Contains("terms"))
-                    {
-                        await context.PostAsync(BotResponses.TermsText);
-                        AddMessagetoHistory(BotResponses.TermsText, "Bot");
-                        context.Wait(LoanAmountReceivedAsync);
+                        string jsonString = await ParseJson(UrlEndpoints.ValidationUrl + $"?cid={ChatModel.CustomerId}");
+                        var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
+
+                        _retainedObj = res;
+
+                        Thread.Sleep(1000);
+
+                        if (_retainedObj.License.Verified.Equals("Yes"))
+                        {
+                            await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
+                            AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}",
+                                "Bot");
+                            if (_retainedObj.License.Question1 != null)
+                                await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
+                            AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
+                            context.Wait(FirstQuestionAnswer);
+                        }
+                        else if (_retainedObj.License.Verified.Equals("No"))
+                        {
+                            await context.PostAsync(BotResponses.UnableToVerifyText);
+                            AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                            context.Wait(CheckForVarificationSms);
+                        }
                     }
                     else
                     {
 
                         await context.PostAsync(BotResponses.imageSuggestPrompt);
                         AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
-                        //Check for hook or image
+                        await context.PostAsync(BotResponses.SesssionExpired);
+                        context.Wait(MessageReceivedAsync);
+
+                    }
+
+
+                }
+                else if (activity != null && activity.Text.Equals("1"))
+                {
+                    await context.PostAsync($"{BotResponses.SmsUpload}");
+                    AddMessagetoHistory($"{BotResponses.SmsUpload}", "Bot");
+                    context.Wait(CheckForVarificationSms);
+                }
+                else
+                {
+                    //invalid text
+                }
+            }
+
+        }
+
+        
+        /// <summary>
+            /// Connects for Verification.
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            private async Task CheckForVarificationSms(IDialogContext context, IAwaitable<object> result)
+        {
+            
+            
+                var activity = await result as Activity;
+
+                bool success = false;
+                if (activity != null && activity.Attachments != null)
+                    foreach (var attachment in activity.Attachments)
+                    {
+                        var unused = attachment;
+                        var attachmentUrl =
+                            unused.ContentUrl;
+                        var httpClient = new HttpClient();
+
+                        var attachmentData =
+                            await httpClient.GetByteArrayAsync(attachmentUrl);
+                        Stream stream = new MemoryStream(attachmentData);
+                        await ImageUploadTask(stream, ChatModel.CustomerId);
+                        try
+                        {
+
+                            var request =
+                                (HttpWebRequest) WebRequest.Create(
+                                    "http://visiloanapi.azurewebsites.net/api/customer/PostImageData");
+
+                            var postData = $"CustomerId={ChatModel.CustomerId}";
+                            postData += $"&Url={UrlEndpoints.BlobBaseUrl}";
+                            var data = Encoding.ASCII.GetBytes(postData);
+
+                            request.Method = "POST";
+                            request.ContentType = "application/x-www-form-urlencoded";
+                            request.ContentLength = data.Length;
+
+                            using (var steam = request.GetRequestStream())
+                            {
+                                steam.Write(data, 0, data.Length);
+                            }
+
+                            var response = (HttpWebResponse) request.GetResponse();
+                            var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                            var modelResult = JsonConvert.DeserializeObject<PostImageDataModel>(responseString);
+                            if (modelResult.Code.Trim().Equals("200"))
+                            {
+                                success = true;
+                            }
+
+
+                            //using (var client = new HttpClient())
+                            //{
+                            //    client.BaseAddress = new Uri(UrlEndpoints.BaseUrl);
+                            //    var content = new FormUrlEncodedContent(new[]
+                            //    {
+                            //        new KeyValuePair<string, string>("CustomerId", ChatModel.CustomerId),
+                            //        new KeyValuePair<string, string>("Url",
+                            //            $"{UrlEndpoints.BlobBaseUrl}{ChatModel.CustomerId}"),
+                            //    });
+                            //    var apiResponseMessage = await client.PostAsync("/api/customer/PostImageData", content);
+                            //    string resultContent = await apiResponseMessage.Content.ReadAsStringAsync();
+                            //    Console.WriteLine(resultContent);
+                            //}
+                        }
+                        catch (Exception exception)
+                        {
+
+                            Console.WriteLine(exception.Message);
+                        }
+                        break;
+                        //TODO: Push This data to server and refactor the code.
+
+                    }
+                else
+                {
+
+                    if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                             activity.Text.ToLower().Equals("stop")))
+                    {
+                        await context.PostAsync(BotResponses.BotReset);
+                        context.Wait(MessageReceivedAsync);
+                    }
+
+                    //Hook Implementation
+
+
+                }
+                if (success.Equals(true))
+                {
+                    string jsonString = await ParseJson(UrlEndpoints.ValidationUrl + $"?cid={ChatModel.CustomerId}");
+                    var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
+
+                    _retainedObj = res;
+
+                    Thread.Sleep(1000);
+
+                    if (_retainedObj.License.Verified.Equals("Yes"))
+                    {
+                        await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
+                        AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}",
+                            "Bot");
+                        if (_retainedObj.License.Question1 != null)
+                            await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
+                        AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
+                        context.Wait(FirstQuestionAnswer);
+                    }
+                    else if (_retainedObj.License.Verified.Equals("No"))
+                    {
+                        await context.PostAsync(BotResponses.UnableToVerifyText);
+                        AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                        context.Wait(CheckForVarificationSms);
                     }
                 }
                 else
                 {
-                    await context.PostAsync(BotResponses.unclearImagePrompt);
-                    AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot");
-                }
+                    if (activity != null && !String.IsNullOrEmpty(activity.Text))
+                    {
+                        if ((activity.Text.ToLower().Equals("reset") ||
+                             activity.Text.ToLower().Equals("stop")))
+                        {
+                            await context.PostAsync(BotResponses.BotReset);
+                            context.Wait(MessageReceivedAsync);
+                            return;
+                        }
+                        else if (activity.Text.ToLower().Contains("help"))
+                        {
+                            await context.PostAsync(BotResponses.HelpText);
+                            AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                            context.Wait(LoanAmountReceivedAsync);
+                        }
+                        else if (activity.Text.ToLower().Contains("terms"))
+                        {
+                            await context.PostAsync(BotResponses.TermsText);
+                            AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                            context.Wait(LoanAmountReceivedAsync);
+                        }
+                        else
+                        {
+
+                            await context.PostAsync(BotResponses.imageSuggestPrompt);
+                            AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
+                            //Check for hook or image
+                        }
+                    }
+                    else
+                    {
+                        await context.PostAsync(BotResponses.unclearImagePrompt);
+                        AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot");
+                    }
                 //display respective message and wait for response
-            }
+
+
+                }
         }
 
         /// <summary>

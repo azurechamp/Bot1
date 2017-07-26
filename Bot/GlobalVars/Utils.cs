@@ -1,6 +1,8 @@
 ﻿namespace Bot.GlobalVars
 {
-    public class Utils
+    public static class Utils
     {
+        public static int TimerMinutes { get; set; } = 20;
+        public static int interval { get; set; } = 1;
     }
 }
