@@ -43,13 +43,22 @@ namespace Bot.Dialogs
         {
             for (int i = 0; i < Utils.TimerMinutes; i++)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(30));
+                Thread.Sleep(TimeSpan.FromSeconds(40));
                 var data = await ParseJson($"{UrlEndpoints.WebHookUrl}{ChatModel.CustomerId}");
                 var model = JsonConvert.DeserializeObject<WebHookModel>(data);
-                if (model.Code.Equals("200"))
+                if (model != null)
                 {
-                    success = true;
-                    break;
+                    if (model.Code.Equals("200"))
+                    {
+                        success = true;
+                        break;
+                    }
+                    if (model.Code.Equals("300"))
+                    {
+                        success = false;
+                        break;
+                    }
+                    
                 }
             }
 
@@ -453,7 +462,7 @@ namespace Bot.Dialogs
                 {
                     await context.PostAsync($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}");
                     AddMessagetoHistory($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}", "Bot");
-                    success = await CheckForUpload(success);
+                    success = await CheckForUpload(false);
                     if (success.Equals(true))
                     {
                         string jsonString = await ParseJson(UrlEndpoints.ValidationUrl + $"?cid={ChatModel.CustomerId}");
