@@ -492,8 +492,8 @@ namespace Bot.Dialogs
                     else
                     {
 
-                        await context.PostAsync(BotResponses.imageSuggestPrompt);
-                        AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
+                        await context.PostAsync(BotResponses.unclearImagePrompt);
+                        AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot");
                         await context.PostAsync(BotResponses.SesssionExpired);
                         context.Wait(MessageReceivedAsync);
 
