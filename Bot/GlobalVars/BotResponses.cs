@@ -7,7 +7,7 @@ namespace Bot.GlobalVars
         public static string BotReset { get; set; } = "BOT RESET! Please start again!";
         public static string InvalidAmount { get; set; } = "Please enter NEW is this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =
-            "Welcome to the turboLoan Application.  \n\nFor Help, enter HELP at any time. For a complete list of terms and conditions, please click: https://is.gd/K7a43A \n\n \n\n";
+            "Welcome to the turboLoan Application.  \n\nFor Help, enter HELP at any time. Please click: https://is.gd/K7a43A  for a complete list of terms and conditions.\n\n \n\n";
         public static string LoanPrompt { get; set; } = "Please enter in the amount you wish to borrow?";
 
         public static string UnableToVerifyLicense { get; set; } =
