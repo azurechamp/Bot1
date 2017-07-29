@@ -43,7 +43,7 @@ namespace Bot.Dialogs
         {
             for (int i = 0; i < Utils.TimerMinutes; i++)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(40));
+                Thread.Sleep(TimeSpan.FromSeconds(30));
                 var data = await ParseJson($"{UrlEndpoints.WebHookUrl}{ChatModel.CustomerId}");
                 var model = JsonConvert.DeserializeObject<WebHookModel>(data);
                 if (model != null)
@@ -277,6 +277,11 @@ namespace Bot.Dialogs
                 AddMessagetoHistory(BotResponses.LoanPrompt, "Bot");
 
                 context.Wait(LoanAmountReceivedAsync);
+            }
+            else if (activity != null && activity.Text.ToLower().Equals("Location"))
+            {
+               //activity.Recipient./*Id*/
+              
             }
             else
             {
@@ -667,9 +672,9 @@ namespace Bot.Dialogs
                     }
                     else
                     {
-                        await context.PostAsync(BotResponses.unclearImagePrompt);
-                        AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot");
-                    }
+                        await context.PostAsync(BotResponses.UnableToVerifyText);
+                        AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                }
                 //display respective message and wait for response
 
 

@@ -5,7 +5,7 @@ namespace Bot.GlobalVars
     public class BotResponses
     {
         public static string BotReset { get; set; } = "BOT RESET! Please start again!";
-        public static string InvalidAmount { get; set; } = "Please enter NEW is this is a new car, or  USED if this is a request for a used car loan";
+        public static string InvalidAmount { get; set; } = "Please enter NEW if this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =
             "Welcome to the turboLoan Application.  \n\nFor Help, enter HELP at any time. Please click: https://is.gd/K7a43A  for a complete list of terms and conditions.\n\n \n\n";
         public static string LoanPrompt { get; set; } = "Please enter in the amount you wish to borrow?";
@@ -42,7 +42,7 @@ namespace Bot.GlobalVars
             " first we need to verify your identity. This is for your own protection. Please answer the following questions.";
 
         public static string UnableToVerifyText { get; set; } =
-            "Unable to validate drivers license. Please upload a new photo with minimal glare and fits to the picture area \n\nWhen you are done, press 1 and send!";
+            "Please retake picture back of your driver license and make sure barcode is visible";
 
         public static string VehicleYearPromptText { get; set; } = "Please enter the year of the vehicle?";
 
@@ -55,8 +55,8 @@ namespace Bot.GlobalVars
         public static string trterms1 { get; set; } =
             "Obtain Quotes From Lenders \n\n(Lender selection based upon loan type, state, amount)";
 
-        public static string imageSuggestPrompt { get; set; } = "We request you to upload the image on url described above. \n\nOtherwise wait for the response from our verification server. ";
-        public static string unclearImagePrompt { get; set; } = "Image you uploaded is unclear and we are unable to process further. \n\nOption 1 - Upload a Clear Image \n\nOption 2 - Contact our support \n\n Options 3 - Start Over by sending \"RESET\". ";
+        public static string imageSuggestPrompt { get; set; } = "We request you to upload back of your driver's license with visible barcode.";
+        public static string unclearImagePrompt { get; set; } = "Please retake picture back of your driver license and make sure barcode is visible";
 
         public static string termsPrompt { get; set; } =
             "Please enter length of loan term in year(s). For multiple term periods please separate with commas.  (example: 3,4,5) To receive all loan offers text ALL?";
