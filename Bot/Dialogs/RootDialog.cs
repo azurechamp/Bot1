@@ -356,6 +356,8 @@ namespace Bot.Dialogs
         /// <returns></returns>
         private async Task TypeOfCarReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
+
+
             //Get Url Implementation
 
             string jsonResponse = await ParseJson(UrlEndpoints.GetUrlEndpoint);
@@ -902,7 +904,7 @@ namespace Bot.Dialogs
                         foreach (var bankInfo in jsonModel.BankInfo)
                         {
                             packages +=
-                                $"{bankInfo.BankId}) {bankInfo.BankName} - ${bankInfo.Amount} - {bankInfo.Term} months @ {bankInfo.Rate}%  \n\n";
+                                $"{bankInfo.BankId}) {bankInfo.BankName} - {bankInfo.Amount} - {bankInfo.Term} months @ {bankInfo.Rate}%  \n\n";
                         }
                         await context.PostAsync(packages);
                         AddMessagetoHistory(packages, "Bot");
