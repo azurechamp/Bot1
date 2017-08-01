@@ -7,7 +7,7 @@ namespace Bot.GlobalVars
         public static string BotReset { get; set; } = "BOT RESET! Please start again!";
         public static string InvalidAmount { get; set; } = "Please enter NEW if this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =
-            "Welcome to the turboLoan Application.  \n\nFor Help, enter HELP at any time. Please click: https://is.gd/K7a43A  for a complete list of terms and conditions.\n\n \n\n";
+            "Welcome to the turboLoan Application.  \n\nFor HELP and Terms & Conditions, please click: https://is.gd/K7a43A to view in detail.\n\n \n\n";
         public static string LoanPrompt { get; set; } = "Please enter in the amount you wish to borrow?";
 
         public static string UnableToVerifyLicense { get; set; } =
@@ -29,7 +29,7 @@ namespace Bot.GlobalVars
         public static string InvalidInputText { get; set; } = "Please enter a valid value !";
         public static string PreWebUpload { get; set; } = "Please click on ";
         public static string SmsUpload { get; set; } = "Please reply with a photo of the back of your drivers license to proceed.";
-        public static string SelectModeOfUpload { get; set; } = "Please select preferred mode (1 or 2) to upload backside image of your driver's license: \n\n1- SMS \n\n 2- Web(URL)";
+        public static string SelectModeOfUpload { get; set; } = "Please select how you would like to upload a copy of the backside of your drivers license:  \n\n1 SMS (text photo)\n\n2) Website";
         public static string WebUpload { get; set; } = " to upload photo of the back of your driving license manually";
         public static string SesssionExpired { get; set; } = "Session has expired ! Please start again.";
         public static string PreImageuploadUrlPrompt { get; set; } = "Please reply with a photo of the back of your drivers license, or click";

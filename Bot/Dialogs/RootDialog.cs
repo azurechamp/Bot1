@@ -286,6 +286,7 @@ namespace Bot.Dialogs
             else
             {
                 await context.PostAsync(BotResponses.InitiationPropmpt);
+                AddMessagetoHistory(BotResponses.InitiationPropmpt,"Bot");
                 context.Wait(MessageReceivedAsync);
             }
         }
@@ -324,6 +325,7 @@ namespace Bot.Dialogs
                                          activity.Text.ToLower().Equals("stop")))
                 {
                     await context.PostAsync(BotResponses.BotReset);
+                    AddMessagetoHistory(BotResponses.BotReset,"Bot");
                     context.Wait(MessageReceivedAsync);
                 }
                 else
@@ -337,6 +339,7 @@ namespace Bot.Dialogs
                             ChatModel.LoanAmout = amount;
                         }
                         await context.PostAsync(BotResponses.CarQuestionText);
+                        AddMessagetoHistory(BotResponses.CarQuestionText,"Bot");
                         context.Wait(TypeOfCarReceivedAsync);
                     }
                     catch (FormatException)
@@ -529,7 +532,7 @@ namespace Bot.Dialogs
             /// <param name="context"></param>
             /// <param name="result"></param>
             /// <returns></returns>
-            private async Task CheckForVarificationSms(IDialogContext context, IAwaitable<object> result)
+         private async Task CheckForVarificationSms(IDialogContext context, IAwaitable<object> result)
         {
             
             
@@ -1013,10 +1016,10 @@ namespace Bot.Dialogs
 
                         context.Wait(MessageReceivedAsync);
                         VerificationModel jsonModel = await FinalVerification(activity);
-                        // Thread.Sleep(2000);
-                        // SaveandPushLog();
+                        Thread thread = new Thread(SaveandPushLog);
                         Thread.Sleep(1000);
                         await FinalStep(context, jsonModel);
+                        
                     }
                     else
                     {
