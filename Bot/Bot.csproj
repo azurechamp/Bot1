@@ -148,6 +148,7 @@
     <Compile Include="Models\ChatModel.cs" />
     <Compile Include="Models\GetUrlObject.cs" />
     <Compile Include="Models\PostImageDataModel.cs" />
+    <Compile Include="Models\States.cs" />
     <Compile Include="Models\VerificationModel.cs" />
     <Compile Include="Models\VerificationObject.cs" />
     <Compile Include="Models\WebHookModel.cs" />
@@ -158,6 +159,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Connected Services\dltextloanAzureStorage\ConnectedService.json" />
+    <Content Include="States.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

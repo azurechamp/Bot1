@@ -51,11 +51,13 @@ namespace Bot.Dialogs
                     if (model.Code.Equals("200"))
                     {
                         success = true;
+                        ChatModel.StateCode = model.State;
                         break;
                     }
                     if (model.Code.Equals("300"))
                     {
                         success = false;
+                        ChatModel.StateCode = model.State;
                         break;
                     }
                     
@@ -484,13 +486,12 @@ namespace Bot.Dialogs
 
                         if (_retainedObj.License.Verified.Equals("Yes"))
                         {
-                            await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
-                            AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}",
-                                "Bot");
-                            if (_retainedObj.License.Question1 != null)
-                                await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
-                            AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
-                            context.Wait(FirstQuestionAnswer);
+
+                            //TODO: Implement State Check
+                            
+                            await context.PostAsync($"{BotResponses.PreStatePrompt} {States.GetName(ChatModel.StateCode.ToUpper()).ToUpper()} {BotResponses.PostStatePrompt}");
+                            context.Wait(VerifyState);
+                                
                         }
                         else if (_retainedObj.License.Verified.Equals("No"))
                         {
@@ -525,14 +526,87 @@ namespace Bot.Dialogs
 
         }
 
-        
+
         /// <summary>
-            /// Connects for Verification.
-            /// </summary>
-            /// <param name="context"></param>
-            /// <param name="result"></param>
-            /// <returns></returns>
-         private async Task CheckForVarificationSms(IDialogContext context, IAwaitable<object> result)
+        /// Check for state
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private async Task VerifyState(IDialogContext context, IAwaitable<object> result)
+        {
+            var activity = await result as Activity;
+
+            if (activity != null && (activity.Text.ToLower().Equals("reset") ||
+                                     activity.Text.ToLower().Equals("stop")))
+            {
+                await context.PostAsync(BotResponses.BotReset);
+                context.Wait(MessageReceivedAsync);
+            }
+            //AddMessagetoHistory(activity?.Text,"User");
+            else if (activity != null && activity.Text.ToLower().Contains("help"))
+            {
+                await context.PostAsync(BotResponses.HelpText);
+                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                context.Wait(LoanTerms);
+            }
+            else if (activity != null && activity.Text.ToLower().Contains("terms"))
+            {
+                await context.PostAsync(BotResponses.TermsText);
+                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                context.Wait(LoanTerms);
+            }
+            else
+            {
+                if (activity != null)
+                {
+                    if (activity.Text.ToLower().Equals("yes"))
+                    {
+                        await MoveContextToQuestion(context);
+                    }
+                    else
+                    {
+                        var stateName =  States.GetName(activity.Text.ToUpper());
+                        if (String.IsNullOrEmpty(stateName))
+                        {
+                            await context.PostAsync(BotResponses.InvalidInputText);
+                            context.Wait(VerifyState);
+                        }
+                        else
+                        {
+                            ChatModel.StateCode = activity.Text.Trim().ToUpper();
+                            await MoveContextToQuestion(context);
+                        }
+
+                    }
+                }
+            }
+
+
+
+        }
+
+        private async Task MoveContextToQuestion(IDialogContext context)
+        {
+            await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
+            AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}",
+                "Bot");
+            if (_retainedObj.License.Question1 != null)
+                await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
+            AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
+            context.Wait(FirstQuestionAnswer);
+        }
+
+
+
+
+        /// <summary>
+        /// Connects for Verification.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private async Task CheckForVarificationSms(IDialogContext context, IAwaitable<object> result)
         {
             
             
@@ -578,6 +652,7 @@ namespace Bot.Dialogs
                             if (modelResult.Code.Trim().Equals("200"))
                             {
                                 success = true;
+                                ChatModel.StateCode = modelResult.State;
                             }
 
 
@@ -629,13 +704,12 @@ namespace Bot.Dialogs
 
                     if (_retainedObj.License.Verified.Equals("Yes"))
                     {
-                        await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
-                        AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}",
-                            "Bot");
-                        if (_retainedObj.License.Question1 != null)
-                            await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
-                        AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
-                        context.Wait(FirstQuestionAnswer);
+
+                    //TODO: Implement State Check
+                    var stateName = States.GetName(ChatModel.StateCode);
+                    await context.PostAsync($"{BotResponses.PreStatePrompt} {stateName.ToUpper()} {BotResponses.PostStatePrompt}");
+                    context.Wait(VerifyState);
+                       
                     }
                     else if (_retainedObj.License.Verified.Equals("No"))
                     {
@@ -1017,6 +1091,7 @@ namespace Bot.Dialogs
                         context.Wait(MessageReceivedAsync);
                         VerificationModel jsonModel = await FinalVerification(activity);
                         Thread thread = new Thread(SaveandPushLog);
+                        thread.Start();
                         Thread.Sleep(1000);
                         await FinalStep(context, jsonModel);
                         

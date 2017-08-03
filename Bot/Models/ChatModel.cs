@@ -15,6 +15,7 @@ namespace Bot.Models
         public static bool Answer2 { get; set; } = false;
         public static string YearOfVehicle { get; set; } = "";
         public static string LoanTermYear { get; set; } = "";
+        public static string StateCode { get; set; } = "";
 
 
     }

@@ -11,5 +11,6 @@ namespace Bot.Models
     {
         public string Code { get; set; }
         public string  MessageText { get; set; }
+        public  string State { get; set; }
     }
 }
