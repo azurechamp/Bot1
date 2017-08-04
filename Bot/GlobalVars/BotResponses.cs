@@ -31,7 +31,7 @@ namespace Bot.GlobalVars
         public static string InvalidInputText { get; set; } = "Please enter a valid value !";
         public static string PreWebUpload { get; set; } = "Please click on ";
         public static string SmsUpload { get; set; } = "Please reply with a photo of the back of your drivers license to proceed.";
-        public static string SelectModeOfUpload { get; set; } = "Please select how you would like to upload a copy of the backside of your drivers license:  \n\n1 SMS (text photo)\n\n2) Website";
+        public static string SelectModeOfUpload { get; set; } = "Please select how you would like to upload a copy of the backside of your drivers license:  \n\n1) SMS (text photo)\n\n2) Website";
         public static string WebUpload { get; set; } = " to upload photo of the back of your driving license manually";
         public static string SesssionExpired { get; set; } = "Session has expired ! Please start again.";
         public static string PreImageuploadUrlPrompt { get; set; } = "Please reply with a photo of the back of your drivers license, or click";
