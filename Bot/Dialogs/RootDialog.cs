@@ -54,7 +54,7 @@ namespace Bot.Dialogs
                         ChatModel.StateCode = model.State;
                         break;
                     }
-                    if (model.Code.Equals("300"))
+                    if (model.Code.Equals("404"))
                     {
                         success = false;
                         ChatModel.StateCode = model.State;
