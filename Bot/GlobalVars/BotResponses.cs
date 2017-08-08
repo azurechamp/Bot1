@@ -4,8 +4,8 @@ namespace Bot.GlobalVars
 {
     public class BotResponses
     {
-        public static string PreStatePrompt { get; set; }= "Reply with \"YES\" if you want to avail loan in ";
-        public static string PostStatePrompt { get; set; } = ", to change please type two character state abbriviation in reply e.g. PA, CA";
+        public static string PreStatePrompt { get; set; }= "Reply with \"YES\" if you are purchasing the vehicle in ";
+        public static string PostStatePrompt { get; set; } = ".  If you are purchasing the vehicle in another state, please respond with the two character state abbreviation (e.g. PA, CA)";
         public static string BotReset { get; set; } = "BOT RESET! Please start again!";
         public static string InvalidAmount { get; set; } = "Please enter NEW if this is a new car, or  USED if this is a request for a used car loan";
         public static string WelcomeMessage { get; set; } =

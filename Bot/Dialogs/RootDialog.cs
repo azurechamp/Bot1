@@ -543,7 +543,6 @@ namespace Bot.Dialogs
                 await context.PostAsync(BotResponses.BotReset);
                 context.Wait(MessageReceivedAsync);
             }
-            //AddMessagetoHistory(activity?.Text,"User");
             else if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
