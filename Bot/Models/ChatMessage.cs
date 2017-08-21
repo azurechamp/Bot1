@@ -11,5 +11,6 @@ namespace Bot.Models
     {
         public string Message { get; set; }
         public string From { get; set; }      
+        public DateTime TimeStamp { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -58,7 +59,7 @@ namespace Bot.Dialogs
                     {
                         success = false;
                         ChatModel.StateCode = model.State;
-                        break;
+                       // break;
                     }
                     
                 }
@@ -135,9 +136,9 @@ namespace Bot.Dialogs
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="from"></param>
-        private void AddMessagetoHistory(string msg, string from)
+        private void AddMessagetoHistory(string msg, string from, DateTime timestamp)
         {
-            _chatHistory.Enqueue(new ChatMessage { Message = msg, From = from });
+            _chatHistory.Enqueue(new ChatMessage { Message = msg, From = from , TimeStamp = timestamp});
         }
         /// <summary>
         /// Method for Validation of Bank Terms
@@ -202,6 +203,7 @@ namespace Bot.Dialogs
 
             //TODO: Add Bank Name
             await context.PostAsync($"Your {jsonModel.BankInfo} Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. \n\nPlease click on the link {jsonModel.URL} to finish your application,  or provide this number to your dealer.\n\n");
+          
         }
         /// <summary>
         /// Sends selected Terms of bank back to API and get
@@ -274,9 +276,9 @@ namespace Bot.Dialogs
             if (activity != null && (activity.Text.ToLower().Equals("loan")|| activity.Text.ToLower().Equals("hello")))
             {
                 await context.PostAsync(BotResponses.WelcomeMessage);
-                AddMessagetoHistory(BotResponses.WelcomeMessage, "Bot");
+                AddMessagetoHistory(BotResponses.WelcomeMessage, "Bot" , timestamp:DateTime.Now);
                 await context.PostAsync(BotResponses.LoanPrompt);
-                AddMessagetoHistory(BotResponses.LoanPrompt, "Bot");
+                AddMessagetoHistory(BotResponses.LoanPrompt, "Bot", timestamp: DateTime.Now);
 
                 context.Wait(LoanAmountReceivedAsync);
             }
@@ -288,7 +290,7 @@ namespace Bot.Dialogs
             else
             {
                 await context.PostAsync(BotResponses.InitiationPropmpt);
-                AddMessagetoHistory(BotResponses.InitiationPropmpt,"Bot");
+                AddMessagetoHistory(BotResponses.InitiationPropmpt,"Bot", timestamp: DateTime.Now);
                 context.Wait(MessageReceivedAsync);
             }
         }
@@ -302,18 +304,18 @@ namespace Bot.Dialogs
         private async Task LoanAmountReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            AddMessagetoHistory(activity?.Text, "User");
+           
             
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanAmountReceivedAsync);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText,"Bot");
+                AddMessagetoHistory(BotResponses.TermsText,"Bot", timestamp: DateTime.Now);
                 context.Wait(LoanAmountReceivedAsync);
             }
             
@@ -327,7 +329,7 @@ namespace Bot.Dialogs
                                          activity.Text.ToLower().Equals("stop")))
                 {
                     await context.PostAsync(BotResponses.BotReset);
-                    AddMessagetoHistory(BotResponses.BotReset,"Bot");
+                    AddMessagetoHistory(BotResponses.BotReset,"Bot", timestamp: DateTime.Now);
                     context.Wait(MessageReceivedAsync);
                 }
                 else
@@ -336,12 +338,12 @@ namespace Bot.Dialogs
                     {
                         if (activity != null)
                         {
-                            AddMessagetoHistory(activity.Text, "User");
+                            AddMessagetoHistory(activity.Text, "User", timestamp: DateTime.Now);
                             decimal amount = decimal.Parse(activity.Text, NumberStyles.Currency);
                             ChatModel.LoanAmout = amount;
                         }
                         await context.PostAsync(BotResponses.CarQuestionText);
-                        AddMessagetoHistory(BotResponses.CarQuestionText,"Bot");
+                        AddMessagetoHistory(BotResponses.CarQuestionText,"Bot", timestamp: DateTime.Now);
                         context.Wait(TypeOfCarReceivedAsync);
                     }
                     catch (FormatException)
@@ -378,13 +380,13 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(TypeOfCarReceivedAsync);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText,"Bot");
+                AddMessagetoHistory(BotResponses.TermsText,"Bot", timestamp: DateTime.Now);
                 context.Wait(TypeOfCarReceivedAsync);
             }
             
@@ -392,34 +394,20 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Equals("used"))
             {
                 //TODO: Ask for way to upload the image
-                AddMessagetoHistory(activity.Text, "User");
+                AddMessagetoHistory(activity.Text, "User", timestamp: DateTime.Now);
                 ChatModel.CarType = "used";
                 await context.PostAsync($"{BotResponses.SelectModeOfUpload}");
+                AddMessagetoHistory($"{BotResponses.SelectModeOfUpload}", "Bot", timestamp: DateTime.Now);
                 context.Wait(HowToSentImage);
-                //  await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
-                ////  await context.PostAsync(BotResponses.ImageUploadPromptText2);
-                //  AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
-                //context.Wait(CheckForVarification);
-                //context.Wait(CheckForVarification);
-
-
+            
             }
             else if (activity != null && activity.Text.ToLower().Equals("new"))
             {
-                AddMessagetoHistory(activity.Text,"User");
+                AddMessagetoHistory(activity.Text,"User", timestamp: DateTime.Now);
                 ChatModel.CarType = "new";
-                //TODO: Ask for way to upload the image
-
                 await context.PostAsync($"{BotResponses.SelectModeOfUpload}");
+                AddMessagetoHistory($"{BotResponses.SelectModeOfUpload}", "Bot", timestamp: DateTime.Now);
                 context.Wait(HowToSentImage);
-                //await context.PostAsync($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}");
-                ////await context.PostAsync(BotResponses.ImageUploadPromptText2);
-                //AddMessagetoHistory($"{BotResponses.PreImageuploadUrlPrompt} {url} {BotResponses.ImageUploadPromptText1}", "Bot");
-                //context.Wait(CheckForVarification);
-                //Check for Call
-                //MessageReceivedAsync
-
-
             }
             else
             {
@@ -452,13 +440,13 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(TypeOfCarReceivedAsync);
             }
             else if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                AddMessagetoHistory(BotResponses.TermsText, "Bot", timestamp: DateTime.Now);
                 context.Wait(TypeOfCarReceivedAsync);
             }
             else if (activity != null && (activity.Text.ToLower().Equals("reset") ||
@@ -472,8 +460,10 @@ namespace Bot.Dialogs
             {
                 if (activity != null && activity.Text.Equals("2"))
                 {
+                    AddMessagetoHistory($"{activity.Text}", "User", timestamp: DateTime.Now);
+                    success = await CheckForUpload(false);
                     await context.PostAsync($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}");
-                    AddMessagetoHistory($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}", "Bot");
+                    AddMessagetoHistory($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}", "Bot", timestamp: DateTime.Now);
                     success = await CheckForUpload(false);
                     if (success.Equals(true))
                     {
@@ -496,7 +486,7 @@ namespace Bot.Dialogs
                         else if (_retainedObj.License.Verified.Equals("No"))
                         {
                             await context.PostAsync(BotResponses.UnableToVerifyText);
-                            AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                            AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot", timestamp: DateTime.Now);
                             context.Wait(CheckForVarificationSms);
                         }
                     }
@@ -504,7 +494,7 @@ namespace Bot.Dialogs
                     {
 
                         await context.PostAsync(BotResponses.unclearImagePrompt);
-                        AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot");
+                        AddMessagetoHistory(BotResponses.unclearImagePrompt, "Bot", timestamp: DateTime.Now);
                         await context.PostAsync(BotResponses.SesssionExpired);
                         context.Wait(MessageReceivedAsync);
 
@@ -514,8 +504,9 @@ namespace Bot.Dialogs
                 }
                 else if (activity != null && activity.Text.Equals("1"))
                 {
+                    AddMessagetoHistory($"{activity.Text}", "User", timestamp: DateTime.Now);
                     await context.PostAsync($"{BotResponses.SmsUpload}");
-                    AddMessagetoHistory($"{BotResponses.SmsUpload}", "Bot");
+                    AddMessagetoHistory($"{BotResponses.SmsUpload}", "Bot", timestamp: DateTime.Now);
                     context.Wait(CheckForVarificationSms);
                 }
                 else
@@ -546,13 +537,13 @@ namespace Bot.Dialogs
             else if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                AddMessagetoHistory(BotResponses.TermsText, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else
@@ -561,6 +552,7 @@ namespace Bot.Dialogs
                 {
                     if (activity.Text.ToLower().Equals("yes"))
                     {
+                        AddMessagetoHistory(activity.Text.Trim().ToUpper(), "User", timestamp: DateTime.Now);
                         await MoveContextToQuestion(context);
                     }
                     else
@@ -574,6 +566,7 @@ namespace Bot.Dialogs
                         else
                         {
                             ChatModel.StateCode = activity.Text.Trim().ToUpper();
+                            AddMessagetoHistory(activity.Text.Trim().ToUpper(), "User", timestamp: DateTime.Now);
                             await MoveContextToQuestion(context);
                         }
 
@@ -589,15 +582,13 @@ namespace Bot.Dialogs
         {
             await context.PostAsync($"Hello {_retainedObj.License.Name},{BotResponses.PreQuestionText} ");
             AddMessagetoHistory($"Hello {_retainedObj.License.Name}, {BotResponses.PreQuestionText}",
-                "Bot");
+                "Bot", timestamp: DateTime.Now);
             if (_retainedObj.License.Question1 != null)
                 await context.PostAsync($"Q: {_retainedObj.License.Question1.question}");
-            AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot");
+            AddMessagetoHistory($"Q: {_retainedObj.License.Question1?.question}", "Bot", timestamp: DateTime.Now);
             context.Wait(FirstQuestionAnswer);
         }
-
-
-
+        
 
         /// <summary>
         /// Connects for Verification.
@@ -707,13 +698,14 @@ namespace Bot.Dialogs
                     //TODO: Implement State Check
                     var stateName = States.GetName(ChatModel.StateCode);
                     await context.PostAsync($"{BotResponses.PreStatePrompt} {stateName.ToUpper()} {BotResponses.PostStatePrompt}");
+                    AddMessagetoHistory($"{BotResponses.PreStatePrompt} {stateName.ToUpper()} {BotResponses.PostStatePrompt}", "Bot", timestamp:DateTime.Now);
                     context.Wait(VerifyState);
                        
                     }
                     else if (_retainedObj.License.Verified.Equals("No"))
                     {
                         await context.PostAsync(BotResponses.UnableToVerifyText);
-                        AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                        AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot", timestamp: DateTime.Now);
                         context.Wait(CheckForVarificationSms);
                     }
                 }
@@ -731,27 +723,27 @@ namespace Bot.Dialogs
                         else if (activity.Text.ToLower().Contains("help"))
                         {
                             await context.PostAsync(BotResponses.HelpText);
-                            AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                            AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                             context.Wait(LoanAmountReceivedAsync);
                         }
                         else if (activity.Text.ToLower().Contains("terms"))
                         {
                             await context.PostAsync(BotResponses.TermsText);
-                            AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                            AddMessagetoHistory(BotResponses.TermsText, "Bot", timestamp: DateTime.Now);
                             context.Wait(LoanAmountReceivedAsync);
                         }
                         else
                         {
 
                             await context.PostAsync(BotResponses.imageSuggestPrompt);
-                            AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot");
+                            AddMessagetoHistory(BotResponses.imageSuggestPrompt, "Bot", timestamp: DateTime.Now);
                             //Check for hook or image
                         }
                     }
                     else
                     {
                         await context.PostAsync(BotResponses.UnableToVerifyText);
-                        AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot");
+                        AddMessagetoHistory(BotResponses.UnableToVerifyText, "Bot", timestamp: DateTime.Now);
                 }
                 //display respective message and wait for response
 
@@ -772,7 +764,7 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(FirstQuestionAnswer);
             }
             if (activity != null && (activity.Text.ToLower().Equals("reset") ||
@@ -785,16 +777,16 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText,"Bot");
+                AddMessagetoHistory(BotResponses.TermsText,"Bot", timestamp: DateTime.Now);
                 context.Wait(FirstQuestionAnswer);
             }
             if (activity != null && activity.Text.ToLower().Equals(_retainedObj.License.Question1.answer.ToLower()))
             {
-                AddMessagetoHistory(activity.Text, "User");
+                AddMessagetoHistory(activity.Text, "User", timestamp: DateTime.Now);
 
                 ChatModel.Answer1= true;
                 await context.PostAsync($"Q:{_retainedObj.License.Question2.question}");
-                AddMessagetoHistory($"Q:{_retainedObj.License.Question2.question}","Bot");
+                AddMessagetoHistory($"Q:{_retainedObj.License.Question2.question}","Bot", timestamp: DateTime.Now);
                 context.Wait(SecondQuestionAnswer);
 
             }
@@ -812,10 +804,10 @@ namespace Bot.Dialogs
                 }
                 else
                 {
-                    AddMessagetoHistory(activity?.Text, "User");
+                    AddMessagetoHistory(activity?.Text, "User", timestamp: DateTime.Now);
                     ChatModel.Answer2 = false;
                     await context.PostAsync($"Q:{_retainedObj.License.Question2.question}");
-                    AddMessagetoHistory($"Q:{_retainedObj.License.Question2.question}", "Bot");
+                    AddMessagetoHistory($"Q:{_retainedObj.License.Question2.question}", "Bot", timestamp: DateTime.Now);
                     context.Wait(SecondQuestionAnswer);
                 }
                
@@ -836,19 +828,19 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(SecondQuestionAnswer);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText,"Bot");
+                AddMessagetoHistory(BotResponses.TermsText,"Bot", timestamp: DateTime.Now);
                 context.Wait(SecondQuestionAnswer);
             }
          
             if (activity != null && activity.Text.ToLower().Equals(_retainedObj.License.Question2.answer.ToLower()))
             {
-                AddMessagetoHistory(activity.Text, "User");
+                AddMessagetoHistory(activity.Text, "User", timestamp: DateTime.Now);
                 ChatModel.Answer2 = true;
 
                 if (ChatModel.Answer1 && ChatModel.Answer2)
@@ -857,7 +849,7 @@ namespace Bot.Dialogs
                     if (ChatModel.CarType.ToLower().Equals("used"))
                     {
                         await context.PostAsync(BotResponses.VehicleYearPromptText);
-                        AddMessagetoHistory(BotResponses.VehicleYearPromptText, "Bot");
+                        AddMessagetoHistory(BotResponses.VehicleYearPromptText, "Bot", timestamp: DateTime.Now);
                         context.Wait(YearOfVehicle);
                         //year of vehicle
                     }
@@ -865,7 +857,7 @@ namespace Bot.Dialogs
                     {
 
                         await context.PostAsync(BotResponses.LoanTermsPromptText);
-                        AddMessagetoHistory(BotResponses.LoanTermsPromptText, "Bot");
+                        AddMessagetoHistory(BotResponses.LoanTermsPromptText, "Bot", timestamp: DateTime.Now);
                         context.Wait(LoanTerms);
                       
                     }
@@ -873,7 +865,7 @@ namespace Bot.Dialogs
                 else
                 {
                     await context.PostAsync(BotResponses.UnableToVerifyIdentity);
-                    AddMessagetoHistory(BotResponses.UnableToVerifyIdentity, "Bot");
+                    AddMessagetoHistory(BotResponses.UnableToVerifyIdentity, "Bot", timestamp: DateTime.Now);
                     SaveandPushLog();
                   
                 }
@@ -918,13 +910,13 @@ namespace Bot.Dialogs
             else if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                AddMessagetoHistory(BotResponses.TermsText, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else
@@ -983,7 +975,8 @@ namespace Bot.Dialogs
                                 $"{bankInfo.BankId}) {bankInfo.BankName} - {bankInfo.Amount} - {bankInfo.Term} months @ {bankInfo.Rate}%  \n\n";
                         }
                         await context.PostAsync(packages);
-                        AddMessagetoHistory(packages, "Bot");
+                        AddMessagetoHistory(activity.Text, "User", timestamp:DateTime.Now);
+                        AddMessagetoHistory(packages, "Bot", timestamp: DateTime.Now);
                         Thread.Sleep(200);
                         await context.PostAsync(BotResponses.LoanShortLong);
                         bankId = jsonModel.BankInfo[jsonModel.BankInfo.Count - 1].BankId;
@@ -1013,22 +1006,22 @@ namespace Bot.Dialogs
             if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot", timestamp: DateTime.Now);
                 context.Wait(YearOfVehicle);
             }
             if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                AddMessagetoHistory(BotResponses.TermsText, "Bot", timestamp: DateTime.Now);
                 context.Wait(YearOfVehicle);
             }
             
             if (activity != null && (activity.Text.Equals("2012") || activity.Text.Equals("2013") || activity.Text.Equals("2014") || activity.Text.Equals("2015") || activity.Text.Equals("2016") || activity.Text.Equals("2017") || activity.Text.Equals("2018")))
             {
-                AddMessagetoHistory(activity.Text,"User");
+                AddMessagetoHistory(activity.Text,"User", timestamp: DateTime.Now);
                 ChatModel.YearOfVehicle = activity.Text;
                 await context.PostAsync(BotResponses.termsPrompt);
-                AddMessagetoHistory(BotResponses.termsPrompt, "Bot");
+                AddMessagetoHistory(BotResponses.termsPrompt, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else
@@ -1068,13 +1061,13 @@ namespace Bot.Dialogs
             else if (activity != null && activity.Text.ToLower().Contains("help"))
             {
                 await context.PostAsync(BotResponses.HelpText);
-                AddMessagetoHistory(BotResponses.HelpText, "Bot");
+                AddMessagetoHistory(BotResponses.HelpText, "Bot" , timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else if (activity != null && activity.Text.ToLower().Contains("terms"))
             {
                 await context.PostAsync(BotResponses.TermsText);
-                AddMessagetoHistory(BotResponses.TermsText, "Bot");
+                AddMessagetoHistory(BotResponses.TermsText, "Bot", timestamp: DateTime.Now);
                 context.Wait(LoanTerms);
             }
             else
@@ -1083,12 +1076,13 @@ namespace Bot.Dialogs
                 {
                     int selectedItem;
                     Int32.TryParse(activity.Text.Trim(), out selectedItem);
-                    AddMessagetoHistory(activity.Text, "User");
+                    AddMessagetoHistory(activity.Text, "User", timestamp: DateTime.Now);
                     if (selectedItem > 0 && selectedItem <= bankId)
                     {
 
                         context.Wait(MessageReceivedAsync);
                         VerificationModel jsonModel = await FinalVerification(activity);
+                        AddMessagetoHistory($"Your {jsonModel.BankInfo} Bank Authorization code is {jsonModel.Code}.  This offer is valid for 48 hours. \n\nPlease click on the link {jsonModel.URL} to finish your application,  or provide this number to your dealer.\n\n", "Bot", timestamp: DateTime.Now);
                         Thread thread = new Thread(SaveandPushLog);
                         thread.Start();
                         Thread.Sleep(1000);
