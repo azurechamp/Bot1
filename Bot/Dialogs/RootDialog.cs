@@ -461,7 +461,6 @@ namespace Bot.Dialogs
                 if (activity != null && activity.Text.Equals("2"))
                 {
                     AddMessagetoHistory($"{activity.Text}", "User", timestamp: DateTime.Now);
-                    success = await CheckForUpload(false);
                     await context.PostAsync($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}");
                     AddMessagetoHistory($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}", "Bot", timestamp: DateTime.Now);
                     success = await CheckForUpload(false);
