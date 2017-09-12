@@ -464,7 +464,7 @@ namespace Bot.Dialogs
                     await context.PostAsync($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}");
                     AddMessagetoHistory($"{BotResponses.PreWebUpload} {ChatModel.URL} {BotResponses.WebUpload}", "Bot", timestamp: DateTime.Now);
                     success = await CheckForUpload(false);
-                    if (success.Equals(true))
+                    if (success.Equals(true))   
                     {
                         string jsonString = await ParseJson(UrlEndpoints.ValidationUrl + $"?cid={ChatModel.CustomerId}");
                         var res = JsonConvert.DeserializeObject<VerificationObject>(jsonString);
