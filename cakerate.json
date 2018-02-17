@@ -1,0 +1,26 @@
+[
+  {
+    "Cake": "Cream Cake",
+    "Type": "2D",
+    "Unit": 1,
+    "Price": 200
+  },
+  {
+    "Cake": "Dry Nuts Cake",
+    "Type": "2D",
+    "Unit": 1,
+    "Price": 150
+  },
+  {
+    "Cake": "Chocolate Dry Cake",
+    "Type": "2D",
+    "Unit": 1,
+    "Price": 250
+  },
+  {
+    "Cake": "Chocolate Cake",
+    "Type": "2D",
+    "Unit": 1,
+    "Price": 300
+  }
+]
