@@ -6,5 +6,9 @@
   {
     "Question": "What size you want?",
     "Options": "2 pound, 3 pound"
+  },
+  {
+    "Question":"How are you?",
+    "Options":"Good,Bad,Nice,Hungary, Thirsty"
   }
 ]
