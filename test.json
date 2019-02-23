@@ -1,0 +1,450 @@
+[
+  {
+    "SKU": "Lays Masala - 13 gm (13x64)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Masala - 13 gm Perforated (13x64)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Masala - 27 gm (27x48)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Masala - 40 gm (40X24)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Masala - 70 gm (70X12)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Salt - 13 gm (13x64)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Salt - 13 gm Perforated (13x64)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Salt - 27 gm (27x48)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Salt - 40 gm (40X24)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Salt - 70 gm (70X12)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS F CHEESE 13G 13X64 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS F CHEESE 13G 13X64 PER M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS F CHEESE 27G 27X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS F CHEESE 40G 40X24 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS F CHEESE 70G 70X12 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Yogurt & Herb - 13 gm (13x64) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Yogurt & Herb - 27 gm (27x48) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Yougurt & Herb - 40 gm (40X24) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Yougurt & Herb - 70 gm (70X12) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS MASALA 155G 155X10 RE SL",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS SALT 155G 155X10 RE SL",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS FREN CHEZ 155G 155X10 RE SL M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS PAPRIKA 26G 26X48",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS PAPRIKA 38G 38X24",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS WAVY MEXICAN CHILI 22G 22X48",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS WAVY MEXICAN CHILI 34G 34X24",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS WAVY SC&ONION 23G 23X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS WAVY SC&ONION 35G 35X24 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Wavy B.B.Q 23 gm (23X48) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Wavy B.B.Q 35 gm (35x24) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Lays Wavy B.B.Q - 68 gm (68x12) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS WAVY CHEESE 23G 23X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "LAYS WAVY CHEESE 35G 35X24 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkuree SLT & BP - 19 gm (19X48) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkuree SLT & BP - 38 gm (38X24) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkuree SLT & BP - 58 gm (58X24) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE CHUTNEY CHASKA 9G 9X72 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE CHUTNEY CHASKA 19G 19X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE CHUTNEY CHASKA 40G 40X24 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE CHUTNEY CHASKA 64G 64X24 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE C CHASKA 110G 110X12 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE RED CHILLI 9G 9X72",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE RED CHILLI 19G 19X48",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE RED CHILI 40G 40X24",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE RED CHILLI 64G 64X24",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE RED CHILLI 110G 110X12",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE HALKE PHULKE CHUTNEY 6G 6X64",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE HALKE PHULKE CHUTNEY 16G 16X48",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE HALKE PHULKE CHATPATA  6G 6X64",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "KURKURE HALKE PHULKE CHATPATA 16G 16X48",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS PUFF KETCHUP 7G 7X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS PUFF KETCHUP 14G 14X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS PUFF KETCHUP 28G 28X36 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS OS CHEESE 7G 7X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS OS CHEESE 14G 14X48 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS OS CHEESE 28G 28X36 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Cheetos Bites CV - 7 gm WH (7x48) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Cheetos Bites CV - 7 gm (7x48) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Cheetos Bites CV -17 gm (17x48) M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "CHEETOS CRUN RFH 32G 32X36 M",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkure Nimko Mix - 31 gm (31x48)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkure Nimko Mix - 82 gm (82x20)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkure Peanuts Salted - 31 gm (31x48)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  },
+  {
+    "SKU": "Kurkure Peanuts Masala - 31 gm (31x48)",
+    "Price": 100,
+    "Weight": 1,
+    "Scheme": 2,
+    "SchemPer": 20
+  }
+]
