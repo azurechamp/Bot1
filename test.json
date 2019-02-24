@@ -1,10 +1,10 @@
 [
   {
     "SKU": "Lays Masala - 13 gm (13x64)",
-    "Price": 10,
+    "Price": 592,
     "Weight": 1,
-    "Scheme": 2,
-    "SchemPer": 20
+    "Scheme": "2Pc-Rs10",
+    "SchemPer": 0.20
   },
   {
     "SKU": "Lays Masala - 13 gm Perforated (13x64)",
