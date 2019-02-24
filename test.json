@@ -1,63 +1,63 @@
 [
   {
     "SKU": "Lays Masala - 13 gm (13x64)",
-    "Price": 100,
+    "Price": 10,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Masala - 13 gm Perforated (13x64)",
-    "Price": 100,
+    "Price": 15,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Masala - 27 gm (27x48)",
-    "Price": 100,
+    "Price": 20,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Masala - 40 gm (40X24)",
-    "Price": 100,
+    "Price": 25,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Masala - 70 gm (70X12)",
-    "Price": 100,
+    "Price": 30,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Salt - 13 gm (13x64)",
-    "Price": 100,
+    "Price": 35,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Salt - 13 gm Perforated (13x64)",
-    "Price": 100,
+    "Price": 40,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Salt - 27 gm (27x48)",
-    "Price": 100,
+    "Price": 45,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
   },
   {
     "SKU": "Lays Salt - 40 gm (40X24)",
-    "Price": 100,
+    "Price": 50,
     "Weight": 1,
     "Scheme": 2,
     "SchemPer": 20
