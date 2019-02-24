@@ -7,7 +7,7 @@
     "SchemPer": 0.20
   },
   {
-    "SKU": "Lays Masala - 13 gm Perforated (13x64)",
+    "SKU": "Lays Masala-13 gm Perforated",
     "Price": 592,
     "Weight": 1,
     "Scheme": "2Pc-Rs10",
@@ -21,18 +21,18 @@
     "SchemPer": 20
   },
   {
-    "SKU": "Lays Masala - 40 gm (40X24)",
-    "Price": 25,
+    "SKU": "Lays Masala-40 gm ",
+    "Price": 652,
     "Weight": 1,
-    "Scheme": 2,
-    "SchemPer": 20
+    "Scheme": "N/A",
+    "SchemPer": 0.10
   },
   {
-    "SKU": "Lays Masala - 70 gm (70X12)",
-    "Price": 30,
+    "SKU": "Lays Masala-70 gm",
+    "Price": 542,
     "Weight": 1,
-    "Scheme": 2,
-    "SchemPer": 20
+    "Scheme": "2Pc-Rs10",
+    "SchemPer": 0
   },
   {
     "SKU": "Lays Salt - 13 gm (13x64)",
@@ -64,10 +64,10 @@
   },
   {
     "SKU": "Lays Salt - 70 gm (70X12)",
-    "Price": 100,
+    "Price": 652,
     "Weight": 1,
-    "Scheme": 2,
-    "SchemPer": 20
+    "Scheme": "N/A",
+    "SchemPer": 0
   },
   {
     "SKU": "LAYS F CHEESE 13G 13X64 M",
